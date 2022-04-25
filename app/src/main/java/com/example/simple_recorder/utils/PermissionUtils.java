@@ -1,15 +1,12 @@
-package com.example.simple_recorder;
+package com.example.simple_recorder.utils;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
+import com.example.simple_recorder.StartSystemPageUtils;
 import java.util.ArrayList;
 import java.util.List;
 

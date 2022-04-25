@@ -1,4 +1,4 @@
-package com.example.simple_recorder;
+package com.example.simple_recorder.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
