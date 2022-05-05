@@ -43,6 +43,8 @@ public class AudioListAdapter extends BaseAdapter {
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.item_audio,viewGroup,false);
             view.setTag(holder);
+            holder = new ViewHolder(view);
+            view.setTag(holder);
         }else {
             holder = (ViewHolder) view.getTag();
         }

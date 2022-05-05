@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private int time= 3;//倒计时时间
     String[] permissions = {
             Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     Handler handler = new Handler(new Handler.Callback() {
         @Override
