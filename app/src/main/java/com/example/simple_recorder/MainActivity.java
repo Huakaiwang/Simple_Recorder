@@ -3,13 +3,13 @@ package com.example.simple_recorder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Button;
+import android.util.Log;
 
+import com.example.simple_recorder.audio.AudioListActivity;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
 import com.example.simple_recorder.utils.Contants;
 import com.example.simple_recorder.utils.IFileInter;
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             if (message.what == 1) {
                 time--;
                 if (time==0) {
-                    startActivity(new Intent(MainActivity.this,AudioListActivity.class));
+                    startActivity(new Intent(MainActivity.this, AudioListActivity.class));
                     finish();
                 }else {
                     binding.mainTv.setText(time+"");
