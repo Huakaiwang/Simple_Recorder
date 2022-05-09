@@ -19,6 +19,7 @@ public class DialogUtils {
             public void onClick(DialogInterface dialogInterface, int which) {
                 if (leftListener!=null) {
                     leftListener.onLeftClick();
+                    dialogInterface.cancel();
                 }
             }
         });
@@ -27,6 +28,7 @@ public class DialogUtils {
             public void onClick(DialogInterface dialogInterface, int which) {
                 if (rightListener!= null) {
                     rightListener.onRightClick();
+                    dialogInterface.cancel();
                 }
             }
         });

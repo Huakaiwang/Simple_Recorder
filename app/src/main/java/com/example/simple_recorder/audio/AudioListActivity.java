@@ -1,7 +1,10 @@
 package com.example.simple_recorder.audio;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -9,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.PopupMenu;
 
 import com.example.simple_recorder.R;
@@ -17,6 +21,8 @@ import com.example.simple_recorder.databinding.ActivityAudioListBinding;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
 import com.example.simple_recorder.utils.AudioInfoUtils;
 import com.example.simple_recorder.utils.Contants;
+import com.example.simple_recorder.utils.DialogUtils;
+import com.example.simple_recorder.utils.RenameDialog;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -74,16 +80,69 @@ public class AudioListActivity extends AppCompatActivity {
                     case R.id.menu_info:
                         break;
                     case R.id.menu_del:
+                        deleteFileByPos(position);
                         break;
                     case R.id.menu_rename:
+                        showRenameDialog(position);
                         break;
                 }
                 return false;
             }
+
         });
         popupMenu.show();
     }
+    //重命名对话框
+    private void showRenameDialog(int position) {
+        AudioBean bean = mDatas.get(position);
+        String title = bean.getTitle();
+        RenameDialog dialog = new RenameDialog(this);
+        dialog.show();
+        dialog.setDialogWidth();
+        dialog.setTipText(title);
+        dialog.setOnEnsureListener(new RenameDialog.OnEnsureListener() {
+            @Override
+            public void onEnsure(String msg) {
+                renameByPosition(msg,position);
+            }
+        });
+    }
+    //对于指定位置的文件重命名
+    private void renameByPosition(String msg, int position) {
+        AudioBean audioBean = mDatas.get(position);
+        if(audioBean.getTitle().equals(msg)){
+            return;
+        }
+        String path = audioBean.getPath();
+        String fileSuffix = audioBean.getFileSuffix();
+        File srcFile = new File(path);//原来的文件
+        //获取修改路径
+        String destPath = srcFile.getParent()+File.separator+msg+fileSuffix;
+        File destFile = new File(destPath);
+        //进行重命名物理操作
+        srcFile.renameTo(destFile);
+        //从内存当中进行修改
+        audioBean.setTitle(msg);
+        audioBean.setPath(destPath);
+        adapter.notifyDataSetChanged();
+    }
 
+    //删除指定位置的文件
+    private void deleteFileByPos(int position) {
+        AudioBean bean = mDatas.get(position);
+        String title = bean.getTitle();
+        String path = bean.getPath();
+        DialogUtils.showNormalDialog(this, "提示信息", "删除后将无法恢复,是否删除该指定文件?",
+                "确定", new DialogUtils.OnLeftClickListener() {
+                    @Override
+                    public void onLeftClick() {
+                        File file = new File(path);
+                        file.getAbsoluteFile().delete();//物理删除文件
+                        mDatas.remove(bean);//从mDatas中删除文件对象
+                        adapter.notifyDataSetChanged();//刷新listView的内容
+                    }
+                }, "取消", null);
+    }
     //点击每一个播放按钮都会回调的方法
     AudioListAdapter.OnItemPlayClickListener playClickListener = new AudioListAdapter.OnItemPlayClickListener() {
         @Override
@@ -91,7 +150,7 @@ public class AudioListActivity extends AppCompatActivity {
 
         }
     };
-
+    //加载文件数据
     private void loadDatas() {
         //1.获取指定路径下的音源文件
 
