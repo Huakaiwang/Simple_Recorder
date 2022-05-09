@@ -16,6 +16,15 @@ public class AudioListAdapter extends BaseAdapter {
 
     private Context context;
     private List<AudioBean>mDatas;
+    //点击每一个itemView当中的playIv都能够回调的接口
+    public interface OnItemPlayClickListener{
+        void onItemPlayClick(AudioListAdapter adapter,View convertView,View playView,int position);
+    }
+    private OnItemPlayClickListener onItemPlayClickListener;
+
+    public void setOnItemPlayClickListener(OnItemPlayClickListener onItemPlayClickListener) {
+        this.onItemPlayClickListener = onItemPlayClickListener;
+    }
 
     public AudioListAdapter(Context context, List<AudioBean> mDatas) {
         this.context = context;
@@ -62,7 +71,16 @@ public class AudioListAdapter extends BaseAdapter {
             holder.ab.ivPlay.setImageResource(R.mipmap.red_play);
             holder.ab.lvControll.setVisibility(View.GONE);
         }
+        View itemView = view;
         //点击播放的图标可以播放或者暂停录音的内容
+        holder.ab.ivPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onItemPlayClickListener!=null) {
+                    onItemPlayClickListener.onItemPlayClick(AudioListAdapter.this,itemView,v,i);
+                }
+            }
+        });
         return view;
     }
     class ViewHolder{

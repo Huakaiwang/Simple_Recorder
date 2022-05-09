@@ -4,7 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.PopupMenu;
 
+import com.example.simple_recorder.R;
 import com.example.simple_recorder.bean.AudioBean;
 import com.example.simple_recorder.databinding.ActivityAudioListBinding;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
@@ -15,6 +22,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.SimpleFormatter;
 
@@ -32,8 +41,56 @@ public class AudioListActivity extends AppCompatActivity {
         adapter = new AudioListAdapter(this,mDatas);
         binding.audioLv.setAdapter(adapter);
         //加载数据
-    loadDatas();
+        loadDatas();
+        //设置监听事件
+        setEvents();
+
+
     }
+    /*
+    * 设置监听
+    * */
+    private void setEvents() {
+        adapter.setOnItemPlayClickListener(playClickListener);
+        binding.audioLv.setOnItemLongClickListener(longClickListener);
+    }
+    //设置长按事件的监听
+    AdapterView.OnItemLongClickListener longClickListener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            showPopMenu(view,position);
+            return false;
+        }
+    };
+    //长按item弹出menu窗口
+    private void showPopMenu(View view, int position) {
+        PopupMenu popupMenu = new PopupMenu(this,view, Gravity.RIGHT);
+        MenuInflater menuInflater = popupMenu.getMenuInflater();
+        menuInflater.inflate(R.menu.audio_menu,popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_info:
+                        break;
+                    case R.id.menu_del:
+                        break;
+                    case R.id.menu_rename:
+                        break;
+                }
+                return false;
+            }
+        });
+        popupMenu.show();
+    }
+
+    //点击每一个播放按钮都会回调的方法
+    AudioListAdapter.OnItemPlayClickListener playClickListener = new AudioListAdapter.OnItemPlayClickListener() {
+        @Override
+        public void onItemPlayClick(AudioListAdapter adapter, View convertView, View playView, int position) {
+
+        }
+    };
 
     private void loadDatas() {
         //1.获取指定路径下的音源文件
@@ -76,6 +133,19 @@ public class AudioListActivity extends AppCompatActivity {
             Log.d("文件相关", "loadDatas: ");
         }
         audioInfoUtils.releseRetriever();//释放多媒体资料的资源对象
+
+        //将集合中的元素重新排序，按照时间先后顺序排序
+        Collections.sort(mDatas, new Comparator<AudioBean>() {
+            @Override
+            public int compare(AudioBean o1, AudioBean o2) {
+                if (o1.getLastModified()<o2.getLastModified()) {
+                    return 1;//返回值为>0，o1排在o2之后
+                }else if(o1.getLastModified() == o2.getLastModified()) {
+                    return 0;
+                }
+                return -1;
+            }
+        });
         adapter.notifyDataSetChanged();
     }
 }
