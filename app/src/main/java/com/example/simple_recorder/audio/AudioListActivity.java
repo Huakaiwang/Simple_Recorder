@@ -3,9 +3,13 @@ package com.example.simple_recorder.audio;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuInflater;
@@ -38,22 +42,53 @@ public class AudioListActivity extends AppCompatActivity {
     private ActivityAudioListBinding binding;
     private List<AudioBean> mDatas;
     private AudioListAdapter adapter;
+    private AudioService audioService;
+    ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            AudioService.AudioBinder audioBinder = (AudioService.AudioBinder)service;
+            audioService = audioBinder.getService();
+            audioService.setOnPlayChangeListener(playChangeListener);
+        }
 
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+    AudioService.OnPlayChangeListener playChangeListener = new AudioService.OnPlayChangeListener() {
+        @Override
+        public void playChange(int changePos) {
+            adapter.notifyDataSetChanged();
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAudioListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        //绑定服务
+        Intent intent = new Intent(this,AudioService.class);
+        bindService(intent,connection,BIND_AUTO_CREATE);
         //为ListView设置数据源和适配器
         mDatas = new ArrayList<>();
         adapter = new AudioListAdapter(this, mDatas);
         binding.audioLv.setAdapter(adapter);
+        //将音频对象集合保存到全局变量中
+        Contants.setsAudioList(mDatas);
         //加载数据
         loadDatas();
         //设置监听事件
         setEvents();
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //解绑服务
+        unbindService(connection);
     }
 
     /*
@@ -64,6 +99,24 @@ public class AudioListActivity extends AppCompatActivity {
         binding.audioLv.setOnItemLongClickListener(longClickListener);
     }
 
+    //点击每一个播放按钮都会回调的方法
+    AudioListAdapter.OnItemPlayClickListener playClickListener = new AudioListAdapter.OnItemPlayClickListener() {
+        @Override
+        public void onItemPlayClick(AudioListAdapter adapter, View convertView, View playView, int position) {
+            for (int i = 0; i < mDatas.size(); i++) {
+                if (i == position) {
+                    continue;
+                }
+                AudioBean audioBean =  mDatas.get(i);
+                audioBean.setPlaying(false);
+            }
+            //获取当前播放状态
+            boolean playing = mDatas.get(position).isPlaying();
+            mDatas.get(position).setPlaying(!playing);
+            adapter.notifyDataSetChanged();
+            audioService.cutMusicOrPause(position);
+        }
+    };
     //设置长按事件的监听
     AdapterView.OnItemLongClickListener longClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
@@ -162,13 +215,6 @@ public class AudioListActivity extends AppCompatActivity {
                 }, "取消", null);
     }
 
-    //点击每一个播放按钮都会回调的方法
-    AudioListAdapter.OnItemPlayClickListener playClickListener = new AudioListAdapter.OnItemPlayClickListener() {
-        @Override
-        public void onItemPlayClick(AudioListAdapter adapter, View convertView, View playView, int position) {
-
-        }
-    };
 
     //加载文件数据
     private void loadDatas() {
