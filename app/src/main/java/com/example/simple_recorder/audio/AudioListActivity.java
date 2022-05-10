@@ -19,6 +19,7 @@ import com.example.simple_recorder.R;
 import com.example.simple_recorder.bean.AudioBean;
 import com.example.simple_recorder.databinding.ActivityAudioListBinding;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
+import com.example.simple_recorder.utils.AudioInfoDialog;
 import com.example.simple_recorder.utils.AudioInfoUtils;
 import com.example.simple_recorder.utils.Contants;
 import com.example.simple_recorder.utils.DialogUtils;
@@ -35,8 +36,9 @@ import java.util.logging.SimpleFormatter;
 
 public class AudioListActivity extends AppCompatActivity {
     private ActivityAudioListBinding binding;
-    private List<AudioBean>mDatas;
+    private List<AudioBean> mDatas;
     private AudioListAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +46,7 @@ public class AudioListActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         //为ListView设置数据源和适配器
         mDatas = new ArrayList<>();
-        adapter = new AudioListAdapter(this,mDatas);
+        adapter = new AudioListAdapter(this, mDatas);
         binding.audioLv.setAdapter(adapter);
         //加载数据
         loadDatas();
@@ -53,31 +55,35 @@ public class AudioListActivity extends AppCompatActivity {
 
 
     }
+
     /*
-    * 设置监听
-    * */
+     * 设置监听
+     * */
     private void setEvents() {
         adapter.setOnItemPlayClickListener(playClickListener);
         binding.audioLv.setOnItemLongClickListener(longClickListener);
     }
+
     //设置长按事件的监听
     AdapterView.OnItemLongClickListener longClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            showPopMenu(view,position);
+            showPopMenu(view, position);
             return false;
         }
     };
+
     //长按item弹出menu窗口
     private void showPopMenu(View view, int position) {
-        PopupMenu popupMenu = new PopupMenu(this,view, Gravity.RIGHT);
+        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.RIGHT);
         MenuInflater menuInflater = popupMenu.getMenuInflater();
-        menuInflater.inflate(R.menu.audio_menu,popupMenu.getMenu());
+        menuInflater.inflate(R.menu.audio_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_info:
+                        showFileInfoDialog(position);
                         break;
                     case R.id.menu_del:
                         deleteFileByPos(position);
@@ -92,6 +98,17 @@ public class AudioListActivity extends AppCompatActivity {
         });
         popupMenu.show();
     }
+
+    //显示文件详情的对话框
+    private void showFileInfoDialog(int position) {
+        AudioBean bean = mDatas.get(position);
+        AudioInfoDialog audioInfoDialog = new AudioInfoDialog(this);
+        audioInfoDialog.show();
+        audioInfoDialog.setDialogWidth();
+        audioInfoDialog.setFileInfo(bean);
+        audioInfoDialog.setCanceledOnTouchOutside(false);
+    }
+
     //重命名对话框
     private void showRenameDialog(int position) {
         AudioBean bean = mDatas.get(position);
@@ -103,21 +120,22 @@ public class AudioListActivity extends AppCompatActivity {
         dialog.setOnEnsureListener(new RenameDialog.OnEnsureListener() {
             @Override
             public void onEnsure(String msg) {
-                renameByPosition(msg,position);
+                renameByPosition(msg, position);
             }
         });
     }
+
     //对于指定位置的文件重命名
     private void renameByPosition(String msg, int position) {
         AudioBean audioBean = mDatas.get(position);
-        if(audioBean.getTitle().equals(msg)){
+        if (audioBean.getTitle().equals(msg)) {
             return;
         }
         String path = audioBean.getPath();
         String fileSuffix = audioBean.getFileSuffix();
         File srcFile = new File(path);//原来的文件
         //获取修改路径
-        String destPath = srcFile.getParent()+File.separator+msg+fileSuffix;
+        String destPath = srcFile.getParent() + File.separator + msg + fileSuffix;
         File destFile = new File(destPath);
         //进行重命名物理操作
         srcFile.renameTo(destFile);
@@ -143,6 +161,7 @@ public class AudioListActivity extends AppCompatActivity {
                     }
                 }, "取消", null);
     }
+
     //点击每一个播放按钮都会回调的方法
     AudioListAdapter.OnItemPlayClickListener playClickListener = new AudioListAdapter.OnItemPlayClickListener() {
         @Override
@@ -150,6 +169,7 @@ public class AudioListActivity extends AppCompatActivity {
 
         }
     };
+
     //加载文件数据
     private void loadDatas() {
         //1.获取指定路径下的音源文件
@@ -158,7 +178,7 @@ public class AudioListActivity extends AppCompatActivity {
         File[] listFiles = fetchFile.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
-                if (new File(file,s).isDirectory()) {
+                if (new File(file, s).isDirectory()) {
                     return false;
                 }
                 if (s.endsWith(".mp3") || s.endsWith(".amr")) {
@@ -169,7 +189,7 @@ public class AudioListActivity extends AppCompatActivity {
         });
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         AudioInfoUtils audioInfoUtils = AudioInfoUtils.getInstance();
-        if(listFiles.length>0) {
+        if (listFiles.length > 0) {
             for (int i = 0; i < listFiles.length; i++) {
                 File listFile = listFiles[i];
                 String fname = listFile.getName();//文件名带后缀
@@ -188,7 +208,7 @@ public class AudioListActivity extends AppCompatActivity {
                         duration, flastMod, suffix, flength);
                 mDatas.add(audioBean);
             }
-        }else{
+        } else {
             Log.d("文件相关", "loadDatas: ");
         }
         audioInfoUtils.releseRetriever();//释放多媒体资料的资源对象
@@ -197,9 +217,9 @@ public class AudioListActivity extends AppCompatActivity {
         Collections.sort(mDatas, new Comparator<AudioBean>() {
             @Override
             public int compare(AudioBean o1, AudioBean o2) {
-                if (o1.getLastModified()<o2.getLastModified()) {
+                if (o1.getLastModified() < o2.getLastModified()) {
                     return 1;//返回值为>0，o1排在o2之后
-                }else if(o1.getLastModified() == o2.getLastModified()) {
+                } else if (o1.getLastModified() == o2.getLastModified()) {
                     return 0;
                 }
                 return -1;
