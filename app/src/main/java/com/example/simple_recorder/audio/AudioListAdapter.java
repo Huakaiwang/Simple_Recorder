@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.SeekBar;
 
 import com.example.simple_recorder.R;
 import com.example.simple_recorder.bean.AudioBean;
@@ -15,11 +16,13 @@ import java.util.List;
 public class AudioListAdapter extends BaseAdapter {
 
     private Context context;
-    private List<AudioBean>mDatas;
+    private List<AudioBean> mDatas;
+
     //点击每一个itemView当中的playIv都能够回调的接口
-    public interface OnItemPlayClickListener{
-        void onItemPlayClick(AudioListAdapter adapter,View convertView,View playView,int position);
+    public interface OnItemPlayClickListener {
+        void onItemPlayClick(AudioListAdapter adapter, View convertView, View playView, int position);
     }
+
     private OnItemPlayClickListener onItemPlayClickListener;
 
     public void setOnItemPlayClickListener(OnItemPlayClickListener onItemPlayClickListener) {
@@ -50,11 +53,11 @@ public class AudioListAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder holder = null;
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.item_audio,viewGroup,false);
+            view = LayoutInflater.from(context).inflate(R.layout.item_audio, viewGroup, false);
             view.setTag(holder);
             holder = new ViewHolder(view);
             view.setTag(holder);
-        }else {
+        } else {
             holder = (ViewHolder) view.getTag();
         }
         //获取指定位置的数据对于控件进行设置
@@ -62,12 +65,12 @@ public class AudioListAdapter extends BaseAdapter {
         holder.ab.tvTime.setText(audioBean.getTime());
         holder.ab.tvDuration.setText(audioBean.getDuration());
         holder.ab.tvTitle.setText(audioBean.getTitle());
-        if (audioBean.isPlaying()==true) {//当前这条正在播放
+        if (audioBean.isPlaying() == true) {//当前这条正在播放
             holder.ab.lvControll.setVisibility(View.VISIBLE);
             holder.ab.pb.setMax(100);
             holder.ab.pb.setProgress(audioBean.getCurrentProgress());
             holder.ab.ivPlay.setImageResource(R.mipmap.red_pause);
-        }else{
+        } else {
             holder.ab.ivPlay.setImageResource(R.mipmap.red_play);
             holder.ab.lvControll.setVisibility(View.GONE);
         }
@@ -76,16 +79,18 @@ public class AudioListAdapter extends BaseAdapter {
         holder.ab.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onItemPlayClickListener!=null) {
-                    onItemPlayClickListener.onItemPlayClick(AudioListAdapter.this,itemView,v,i);
+                if (onItemPlayClickListener != null) {
+                    onItemPlayClickListener.onItemPlayClick(AudioListAdapter.this, itemView, v, i);
                 }
             }
         });
         return view;
     }
-    class ViewHolder{
+
+    class ViewHolder {
         ItemAudioBinding ab;
-        public ViewHolder(View v){
+
+        public ViewHolder(View v) {
             ab = ItemAudioBinding.bind(v);
         }
     }

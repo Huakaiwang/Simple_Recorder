@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.SeekBar;
 
 import com.example.simple_recorder.R;
 import com.example.simple_recorder.bean.AudioBean;
@@ -43,10 +44,11 @@ public class AudioListActivity extends AppCompatActivity {
     private List<AudioBean> mDatas;
     private AudioListAdapter adapter;
     private AudioService audioService;
+    private SeekBar seekBar;
     ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            AudioService.AudioBinder audioBinder = (AudioService.AudioBinder)service;
+            AudioService.AudioBinder audioBinder = (AudioService.AudioBinder) service;
             audioService = audioBinder.getService();
             audioService.setOnPlayChangeListener(playChangeListener);
         }
@@ -56,20 +58,27 @@ public class AudioListActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    public boolean moveTaskToBack(boolean nonRoot) {
+        return super.moveTaskToBack(true);
+    }
+
     AudioService.OnPlayChangeListener playChangeListener = new AudioService.OnPlayChangeListener() {
         @Override
         public void playChange(int changePos) {
             adapter.notifyDataSetChanged();
         }
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAudioListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         //绑定服务
-        Intent intent = new Intent(this,AudioService.class);
-        bindService(intent,connection,BIND_AUTO_CREATE);
+        Intent intent = new Intent(this, AudioService.class);
+        bindService(intent, connection, BIND_AUTO_CREATE);
         //为ListView设置数据源和适配器
         mDatas = new ArrayList<>();
         adapter = new AudioListAdapter(this, mDatas);
@@ -97,6 +106,7 @@ public class AudioListActivity extends AppCompatActivity {
     private void setEvents() {
         adapter.setOnItemPlayClickListener(playClickListener);
         binding.audioLv.setOnItemLongClickListener(longClickListener);
+
     }
 
     //点击每一个播放按钮都会回调的方法
@@ -107,7 +117,7 @@ public class AudioListActivity extends AppCompatActivity {
                 if (i == position) {
                     continue;
                 }
-                AudioBean audioBean =  mDatas.get(i);
+                AudioBean audioBean = mDatas.get(i);
                 audioBean.setPlaying(false);
             }
             //获取当前播放状态
