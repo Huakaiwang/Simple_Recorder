@@ -44,13 +44,14 @@ public class AudioListActivity extends AppCompatActivity {
     private List<AudioBean> mDatas;
     private AudioListAdapter adapter;
     private AudioService audioService;
-    private SeekBar seekBar;
     ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             AudioService.AudioBinder audioBinder = (AudioService.AudioBinder) service;
+            Log.d("audio", "onServiceConnected: "+audioBinder.getService());
             audioService = audioBinder.getService();
             audioService.setOnPlayChangeListener(playChangeListener);
+
         }
 
         @Override
@@ -94,8 +95,22 @@ public class AudioListActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("AudioList", "onRestart: ");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("AudioList", "onStop: ");
+
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d("AudioList", "onDestroy: ");
         //解绑服务
         unbindService(connection);
     }
@@ -106,9 +121,16 @@ public class AudioListActivity extends AppCompatActivity {
     private void setEvents() {
         adapter.setOnItemPlayClickListener(playClickListener);
         binding.audioLv.setOnItemLongClickListener(longClickListener);
-
+        adapter.setOnSeekBarChangeListener(onSeekBarChangeListener);
     }
-
+    //拖动SeekBar改变音频进度
+    AudioListAdapter.OnSeekBarChangeListener onSeekBarChangeListener = new AudioListAdapter.OnSeekBarChangeListener() {
+        @Override
+        public void onChange(AudioListAdapter adapter, View convertView, SeekBar playView, int position) {
+            int current = playView.getProgress();
+            audioService.changeAudioByCurrent(current,position);
+        }
+    };
     //点击每一个播放按钮都会回调的方法
     AudioListAdapter.OnItemPlayClickListener playClickListener = new AudioListAdapter.OnItemPlayClickListener() {
         @Override

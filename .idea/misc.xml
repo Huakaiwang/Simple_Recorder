@@ -11,6 +11,7 @@
         <entry key="app/src/main/res/layout/dialog_audioinfo.xml" value="0.48825710754017304" />
         <entry key="app/src/main/res/layout/dialog_rename.xml" value="0.16894630192502533" />
         <entry key="app/src/main/res/layout/item_audio.xml" value="0.16894630192502533" />
+        <entry key="app/src/main/res/layout/notify_audio.xml" value="0.1527777777777778" />
         <entry key="app/src/main/res/menu/audio_menu.xml" value="0.28888888888888886" />
       </map>
     </option>

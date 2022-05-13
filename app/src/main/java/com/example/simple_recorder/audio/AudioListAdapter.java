@@ -1,6 +1,7 @@
 package com.example.simple_recorder.audio;
 
 import android.content.Context;
+import android.nfc.Tag;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,16 @@ public class AudioListAdapter extends BaseAdapter {
 
     private Context context;
     private List<AudioBean> mDatas;
+    //
+    public interface OnSeekBarChangeListener{
+        void onChange(AudioListAdapter adapter,View convertView,SeekBar playView,int position);
+    }
+    private OnSeekBarChangeListener onSeekBarChangeListener;
 
+    public void setOnSeekBarChangeListener(OnSeekBarChangeListener onSeekBarChangeListener) {
+        this.onSeekBarChangeListener = onSeekBarChangeListener;
+    }
+    //
     //点击每一个itemView当中的playIv都能够回调的接口
     public interface OnItemPlayClickListener {
         void onItemPlayClick(AudioListAdapter adapter, View convertView, View playView, int position);
@@ -74,6 +84,7 @@ public class AudioListAdapter extends BaseAdapter {
             holder.ab.ivPlay.setImageResource(R.mipmap.red_play);
             holder.ab.lvControll.setVisibility(View.GONE);
         }
+        String tag = holder.toString();
         View itemView = view;
         //点击播放的图标可以播放或者暂停录音的内容
         holder.ab.ivPlay.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +92,24 @@ public class AudioListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 if (onItemPlayClickListener != null) {
                     onItemPlayClickListener.onItemPlayClick(AudioListAdapter.this, itemView, v, i);
+                }
+            }
+        });
+        holder.ab.pb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (onSeekBarChangeListener != null) {
+                    onSeekBarChangeListener.onChange(AudioListAdapter.this, itemView,seekBar, i);
                 }
             }
         });

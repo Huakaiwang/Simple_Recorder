@@ -4,13 +4,16 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.example.simple_recorder.bean.AudioBean;
 import com.example.simple_recorder.utils.Contants;
@@ -24,6 +27,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
     public AudioService() {
     }
+//创建通知对象和远程View对象
 
     public interface OnPlayChangeListener {
         public void playChange(int changePos);
@@ -111,6 +115,30 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         }
     }
 
+    //改变音频播放位置
+    public void changeAudioByCurrent(int current, int position) {
+        try {
+            mediaPlayer.reset();
+            if (mediaPlayer == null) {
+                mediaPlayer = new MediaPlayer();
+                //设置监听事件
+                mediaPlayer.setOnCompletionListener(this);
+            }
+            //设置播放音频的资源路径
+            playPosition = position;
+            //设置播放音频的资源路径
+            mediaPlayer.setDataSource(mList.get(position).getPath());
+            mediaPlayer.prepare();
+            mediaPlayer.seekTo((int) ((mList.get(position).getDurationLong() / 100) * current));
+            mediaPlayer.start();
+            notifyActivityRefreshUI();
+            setFlagControlThread(true);
+            updateProgress();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     //暂停和继续播放音乐的
     public void pauseOrContinueMusic() {
         int playPosition = this.playPosition;
@@ -168,6 +196,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
             return true;
         }
     });
+
 
     @Override
     public void onDestroy() {
