@@ -21,6 +21,7 @@ import android.widget.PopupMenu;
 import android.widget.SeekBar;
 
 import com.example.simple_recorder.R;
+import com.example.simple_recorder.audio.AudioService.AudioBinder;
 import com.example.simple_recorder.bean.AudioBean;
 import com.example.simple_recorder.databinding.ActivityAudioListBinding;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
@@ -47,7 +48,7 @@ public class AudioListActivity extends AppCompatActivity {
     ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            AudioService.AudioBinder audioBinder = (AudioService.AudioBinder) service;
+            AudioBinder audioBinder = (AudioBinder) service;
             Log.d("audio", "onServiceConnected: "+audioBinder.getService());
             audioService = audioBinder.getService();
             audioService.setOnPlayChangeListener(playChangeListener);

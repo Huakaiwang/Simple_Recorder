@@ -40,15 +40,16 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
     private final int NOTIFY_ID_MUSIC = 100;//发送通知的id
     private AudioReceiver receiver;
     /*
-    * 接收通知发出的广播的action
-    * */
+     * 接收通知发出的广播的action
+     * */
     private final String PRE_ACTION_LAST = "com.animee.last";
     private final String PRE_ACTION_PLAY = "com.animee.play";
     private final String PRE_ACTION_NEXT = "com.animee.next";
     private final String PRE_ACTION_CLOSE = "com.animee.close";
     private Notification notification;
 
-    public AudioService() { }
+    public AudioService() {
+    }
 
     @Override
     public void onCreate() {
@@ -60,31 +61,33 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
 
     //创建广播接收者
-    class AudioReceiver extends BroadcastReceiver{
+    class AudioReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
-        notifyUIControl(action);
+            String action = intent.getAction();
+            notifyUIControl(action);
         }
 
         private void notifyUIControl(String action) {
             switch (action) {
                 case PRE_ACTION_LAST:
-
+                    previousMusic();
                     break;
                 case PRE_ACTION_PLAY:
-
+                    pauseOrContinueMusic();
                     break;
                 case PRE_ACTION_NEXT:
-
+                    nextMusic();
                     break;
                 case PRE_ACTION_CLOSE:
-
+                    closeNotification();
                     break;
             }
         }
     }
-//注册广播接收者，用于接受用户点击通知栏按钮发出的信息
+
+
+    //注册广播接收者，用于接受用户点击通知栏按钮发出的信息
     private void initRegisterReceiver() {
         receiver = new AudioReceiver();
         IntentFilter filter = new IntentFilter();
@@ -92,23 +95,25 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         filter.addAction(PRE_ACTION_PLAY);
         filter.addAction(PRE_ACTION_NEXT);
         filter.addAction(PRE_ACTION_CLOSE);
-        registerReceiver(receiver,filter);
+        registerReceiver(receiver, filter);
     }
-//设置通知栏显示效果以及图片的点击事件
+
+    //设置通知栏显示效果以及通知的点击事件
     private void initRemoteView() {
-        remoteView = new RemoteViews(getPackageName(),R.layout.notify_audio);
-        PendingIntent lastPI = PendingIntent.getBroadcast(this,1,new Intent(PRE_ACTION_LAST),PendingIntent.FLAG_UPDATE_CURRENT);
-        remoteView.setOnClickPendingIntent(R.id.ny_iv_last,lastPI);
+        remoteView = new RemoteViews(getPackageName(), R.layout.notify_audio);
+        PendingIntent lastPI = PendingIntent.getBroadcast(this, 1, new Intent(PRE_ACTION_LAST), PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.ny_iv_last, lastPI);
 
-        PendingIntent playPI = PendingIntent.getBroadcast(this,1,new Intent(PRE_ACTION_PLAY),PendingIntent.FLAG_UPDATE_CURRENT);
-        remoteView.setOnClickPendingIntent(R.id.ny_iv_last,playPI);
+        PendingIntent playPI = PendingIntent.getBroadcast(this, 1, new Intent(PRE_ACTION_PLAY), PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.ny_iv_play, playPI);
 
-        PendingIntent nextPI = PendingIntent.getBroadcast(this,1,new Intent(PRE_ACTION_NEXT),PendingIntent.FLAG_UPDATE_CURRENT);
-        remoteView.setOnClickPendingIntent(R.id.ny_iv_last,nextPI);
+        PendingIntent nextPI = PendingIntent.getBroadcast(this, 1, new Intent(PRE_ACTION_NEXT), PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.ny_iv_next, nextPI);
 
-        PendingIntent closePI = PendingIntent.getBroadcast(this,1,new Intent(PRE_ACTION_CLOSE),PendingIntent.FLAG_UPDATE_CURRENT);
-        remoteView.setOnClickPendingIntent(R.id.ny_iv_last,closePI);
+        PendingIntent closePI = PendingIntent.getBroadcast(this, 1, new Intent(PRE_ACTION_CLOSE), PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.ny_iv_close, closePI);
     }
+
     //初始化通知栏
     private void initNotification() {
         String channelID = "1";
@@ -116,31 +121,33 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         NotificationChannel channel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_LOW);
         manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.createNotificationChannel(channel);
-        Notification.Builder builder = new Notification.Builder(this,channelID);
+        Notification.Builder builder = new Notification.Builder(this, channelID);
         builder.setSmallIcon(R.mipmap.icon_app_logo)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.icon_app_logo))
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.icon_app_logo))
                 .setCustomContentView(remoteView)
                 .setAutoCancel(false)
                 .setOngoing(true)
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .setChannelId(channelID);
-         notification = builder.build();
+        notification = builder.build();
     }
+
     /*
-    * 更新通知栏信息
-    * */
-    private void updateNotification(int playPosition){
+     * 更新通知栏信息
+     * */
+    private void updateNotification(int playPosition) {
         //根据多媒体的播放状态显示图片
         if (mediaPlayer.isPlaying()) {
-            remoteView.setImageViewResource(R.id.ny_iv_play,R.mipmap.red_pause);
-        }else{
-            remoteView.setImageViewResource(R.id.ny_iv_play,R.mipmap.red_play);
+            remoteView.setImageViewResource(R.id.ny_iv_play, R.mipmap.red_pause);
+        } else {
+            remoteView.setImageViewResource(R.id.ny_iv_play, R.mipmap.red_play);
         }
-        remoteView.setTextViewText(R.id.ny_tv_tiltle,mList.get(playPosition).getTitle());
-        remoteView.setTextViewText(R.id.ny_tv_durtion,mList.get(playPosition).getDuration());
+        remoteView.setTextViewText(R.id.ny_tv_tiltle, mList.get(playPosition).getTitle());
+        remoteView.setTextViewText(R.id.ny_tv_durtion, mList.get(playPosition).getDuration());
         //发送通知
-        manager.notify(NOTIFY_ID_MUSIC,notification);
+        manager.notify(NOTIFY_ID_MUSIC, notification);
     }
+
     public interface OnPlayChangeListener {
         public void playChange(int changePos);
     }
@@ -267,6 +274,50 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         updateNotification(playPosition);
     }
 
+    //关闭通知栏，停止播放音乐
+    private void closeNotification() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            mList.get(playPosition).setPlaying(false);
+        }
+        manager.cancel(NOTIFY_ID_MUSIC);
+    }
+
+    //播放下一曲
+    private void nextMusic() {
+        mList.get(playPosition).setPlaying(false);
+        if (playPosition >= mList.size() - 1) {
+            playPosition = 0;
+        } else {
+            playPosition++;
+        }
+        mList.get(playPosition).setPlaying(true);
+        play(playPosition);
+    }
+
+    //播放上一曲
+    private void previousMusic() {
+        mList.get(playPosition).setPlaying(false);
+        //当前播放位置为0,则播放mList对象数组中的最后一曲，否则播放上一曲
+        if (playPosition == 0) {
+            playPosition = mList.size() - 1;
+        } else {
+            playPosition--;
+        }
+        mList.get(playPosition).setPlaying(true);
+        play(playPosition);
+    }
+
+    //停止音乐
+    public void closeMusic() {
+        if (mediaPlayer != null) {
+            setFlagControlThread(false);
+            closeNotification();
+            mediaPlayer.stop();
+            playPosition = -1;
+        }
+    }
+
     /*
      * 进度条更新显示进度
      * */
@@ -315,6 +366,9 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mediaPlayer.stop();
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+        }
+        closeMusic();
     }
 }
