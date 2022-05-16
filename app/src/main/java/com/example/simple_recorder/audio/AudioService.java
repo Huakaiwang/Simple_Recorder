@@ -1,7 +1,16 @@
 package com.example.simple_recorder.audio;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Build;
@@ -10,11 +19,13 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.example.simple_recorder.R;
 import com.example.simple_recorder.bean.AudioBean;
 import com.example.simple_recorder.utils.Contants;
 
@@ -24,11 +35,112 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
     private MediaPlayer mediaPlayer = null;
     private List<AudioBean> mList;//播放列表
     private int playPosition = -1;//当前播放位置
+    private RemoteViews remoteView;//通知对应的布局
+    private NotificationManager manager;
+    private final int NOTIFY_ID_MUSIC = 100;//发送通知的id
+    private AudioReceiver receiver;
+    /*
+    * 接收通知发出的广播的action
+    * */
+    private final String PRE_ACTION_LAST = "com.animee.last";
+    private final String PRE_ACTION_PLAY = "com.animee.play";
+    private final String PRE_ACTION_NEXT = "com.animee.next";
+    private final String PRE_ACTION_CLOSE = "com.animee.close";
+    private Notification notification;
 
-    public AudioService() {
+    public AudioService() { }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        initRegisterReceiver();
+        initRemoteView();
+        initNotification();
     }
-//创建通知对象和远程View对象
 
+
+    //创建广播接收者
+    class AudioReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
+        notifyUIControl(action);
+        }
+
+        private void notifyUIControl(String action) {
+            switch (action) {
+                case PRE_ACTION_LAST:
+
+                    break;
+                case PRE_ACTION_PLAY:
+
+                    break;
+                case PRE_ACTION_NEXT:
+
+                    break;
+                case PRE_ACTION_CLOSE:
+
+                    break;
+            }
+        }
+    }
+//注册广播接收者，用于接受用户点击通知栏按钮发出的信息
+    private void initRegisterReceiver() {
+        receiver = new AudioReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PRE_ACTION_LAST);
+        filter.addAction(PRE_ACTION_PLAY);
+        filter.addAction(PRE_ACTION_NEXT);
+        filter.addAction(PRE_ACTION_CLOSE);
+        registerReceiver(receiver,filter);
+    }
+//设置通知栏显示效果以及图片的点击事件
+    private void initRemoteView() {
+        remoteView = new RemoteViews(getPackageName(),R.layout.notify_audio);
+        PendingIntent lastPI = PendingIntent.getBroadcast(this,1,new Intent(PRE_ACTION_LAST),PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.ny_iv_last,lastPI);
+
+        PendingIntent playPI = PendingIntent.getBroadcast(this,1,new Intent(PRE_ACTION_PLAY),PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.ny_iv_last,playPI);
+
+        PendingIntent nextPI = PendingIntent.getBroadcast(this,1,new Intent(PRE_ACTION_NEXT),PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.ny_iv_last,nextPI);
+
+        PendingIntent closePI = PendingIntent.getBroadcast(this,1,new Intent(PRE_ACTION_CLOSE),PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.ny_iv_last,closePI);
+    }
+    //初始化通知栏
+    private void initNotification() {
+        String channelID = "1";
+        String channelName = "channel_name";
+        NotificationChannel channel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_LOW);
+        manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(channel);
+        Notification.Builder builder = new Notification.Builder(this,channelID);
+        builder.setSmallIcon(R.mipmap.icon_app_logo)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.icon_app_logo))
+                .setCustomContentView(remoteView)
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .setChannelId(channelID);
+         notification = builder.build();
+    }
+    /*
+    * 更新通知栏信息
+    * */
+    private void updateNotification(int playPosition){
+        //根据多媒体的播放状态显示图片
+        if (mediaPlayer.isPlaying()) {
+            remoteView.setImageViewResource(R.id.ny_iv_play,R.mipmap.red_pause);
+        }else{
+            remoteView.setImageViewResource(R.id.ny_iv_play,R.mipmap.red_play);
+        }
+        remoteView.setTextViewText(R.id.ny_tv_tiltle,mList.get(playPosition).getTitle());
+        remoteView.setTextViewText(R.id.ny_tv_durtion,mList.get(playPosition).getDuration());
+        //发送通知
+        manager.notify(NOTIFY_ID_MUSIC,notification);
+    }
     public interface OnPlayChangeListener {
         public void playChange(int changePos);
     }
@@ -110,6 +222,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
             notifyActivityRefreshUI();
             setFlagControlThread(true);
             updateProgress();
+            updateNotification(position);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -151,6 +264,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
             audioBean.setPlaying(true);
         }
         notifyActivityRefreshUI();
+        updateNotification(playPosition);
     }
 
     /*
