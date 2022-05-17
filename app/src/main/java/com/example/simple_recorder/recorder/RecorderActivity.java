@@ -8,21 +8,31 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.example.simple_recorder.R;
 import com.example.simple_recorder.audio.AudioListActivity;
 import com.example.simple_recorder.databinding.ActivityRecorderBinding;
+import com.example.simple_recorder.utils.StartSystemPageUtils;
 
 public class RecorderActivity extends AppCompatActivity {
     private ActivityRecorderBinding binding;
     private RecorderService recorderService;
+    RecorderService.OnRefreshUIThreadListener refreshUIListener = new RecorderService.OnRefreshUIThreadListener() {
+        @Override
+        public void onRefresh(int db, String time) {
+            binding.voicLine.setVolume(db);
+            binding.tvDuration.setText(time);
+        }
+    };
     ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             RecorderService.RecorderBinder binder = (RecorderService.RecorderBinder)service;
             recorderService = binder.getService();
             recorderService.startRecorder();
+            recorderService.setOnRefreshUIThreadListener(refreshUIListener);
         }
 
         @Override
@@ -41,7 +51,11 @@ public class RecorderActivity extends AppCompatActivity {
     public void onClick(View view){
         switch (view.getId()) {
             case R.id.iv_back:
-
+                if (recorderService.getRecorder()!=null) {
+                    Intent intent = new Intent(this,AudioListActivity.class);
+                }else{
+                    StartSystemPageUtils.goToHomePage(this);
+                }
                 break;
             case R.id.iv_stop:
                 recorderService.stopRecorder();
@@ -50,6 +64,15 @@ public class RecorderActivity extends AppCompatActivity {
                 finish();
                 break;
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            StartSystemPageUtils.goToHomePage(this);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
