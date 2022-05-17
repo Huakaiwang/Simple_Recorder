@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,11 +26,13 @@ import com.example.simple_recorder.audio.AudioService.AudioBinder;
 import com.example.simple_recorder.bean.AudioBean;
 import com.example.simple_recorder.databinding.ActivityAudioListBinding;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
+import com.example.simple_recorder.recorder.RecorderActivity;
 import com.example.simple_recorder.utils.AudioInfoDialog;
 import com.example.simple_recorder.utils.AudioInfoUtils;
 import com.example.simple_recorder.utils.Contants;
 import com.example.simple_recorder.utils.DialogUtils;
 import com.example.simple_recorder.utils.RenameDialog;
+import com.example.simple_recorder.utils.StartSystemPageUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -94,6 +97,15 @@ public class AudioListActivity extends AppCompatActivity {
 
 
     }
+//重写onKeyDown方法，使得点击返回键不退出app，而是跳转至桌面
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            StartSystemPageUtils.goToHomePage(this);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     protected void onRestart() {
@@ -123,7 +135,19 @@ public class AudioListActivity extends AppCompatActivity {
         adapter.setOnItemPlayClickListener(playClickListener);
         binding.audioLv.setOnItemLongClickListener(longClickListener);
         adapter.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        binding.audioIb.setOnClickListener(onClickListener);
     }
+    View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            //关闭音乐
+            audioService.closeMusic();
+            //跳转到录音界面
+            startActivity(new Intent(AudioListActivity.this, RecorderActivity.class));
+            //销毁当前Activity
+            finish();
+        }
+    };
     //拖动SeekBar改变音频进度
     AudioListAdapter.OnSeekBarChangeListener onSeekBarChangeListener = new AudioListAdapter.OnSeekBarChangeListener() {
         @Override
@@ -240,6 +264,8 @@ public class AudioListActivity extends AppCompatActivity {
                 "确定", new DialogUtils.OnLeftClickListener() {
                     @Override
                     public void onLeftClick() {
+                        //删除前先关闭音乐资源
+                        audioService.closeMusic();
                         File file = new File(path);
                         file.getAbsoluteFile().delete();//物理删除文件
                         mDatas.remove(bean);//从mDatas中删除文件对象

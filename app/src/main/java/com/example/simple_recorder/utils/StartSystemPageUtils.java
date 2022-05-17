@@ -1,4 +1,4 @@
-package com.example.simple_recorder;
+package com.example.simple_recorder.utils;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,5 +17,11 @@ public class StartSystemPageUtils {
         Uri uri = Uri.fromParts("package",context.getPackageName(),null);
         intent.setData(uri);
         context.startActivity(intent);
+    }
+    public static void goToHomePage(Activity context){
+        Intent home = new Intent(Intent.ACTION_MAIN);
+        home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        home.addCategory(Intent.CATEGORY_HOME);
+        context.startActivity(home);
     }
 }

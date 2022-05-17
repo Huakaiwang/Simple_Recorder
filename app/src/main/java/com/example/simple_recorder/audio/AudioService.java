@@ -165,9 +165,11 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         }
     }
 
+    //当mediaplayer播放完当前歌曲，通知activity刷新UI
     @Override
     public void onCompletion(MediaPlayer mp) {
-
+        mList.get(playPosition).setPlaying(false);
+        notifyActivityRefreshUI();
     }
 
     public class AudioBinder extends Binder {
