@@ -22,7 +22,8 @@
 
         <activity
             android:name=".recorder.RecorderActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTask"/>
 
         <service
             android:name=".audio.AudioService"

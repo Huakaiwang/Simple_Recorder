@@ -1,7 +1,12 @@
 package com.example.simple_recorder.recorder;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Binder;
@@ -9,9 +14,11 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 
+import com.example.simple_recorder.R;
 import com.example.simple_recorder.utils.Contants;
 
 import java.io.File;
@@ -25,6 +32,11 @@ public class RecorderService extends Service {
     private String recorderDirpath;//存放录音的公共目录
     private SimpleDateFormat sdf,calSdf;
     private int time;
+    private RemoteViews remoteView;
+    private NotificationManager manager;
+    private Notification notification;
+    private int NOTIFY_ID_RECORDER = 102;
+
     public MediaRecorder getRecorder() {
         return recorder;
     }
@@ -35,6 +47,49 @@ public class RecorderService extends Service {
         sdf = new SimpleDateFormat("yyyMMdd_HHmmss");
         calSdf = new SimpleDateFormat("HH:mm:ss");
         recorderDirpath = Contants.PATH_FETCH_DIR_RECORD;
+        initRemoteView();
+        initNotification();
+    }
+/*
+* 初始化通知对象
+* */
+    private void initNotification() {
+        String channelID = "2";
+        String channelName = "channel_name";
+        NotificationChannel channel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_LOW);
+        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(channel);
+        Notification.Builder builder = new Notification.Builder(this,channelID);
+        builder.setSmallIcon(R.mipmap.icon_voice)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.icon_voice))
+                .setCustomContentView(remoteView)
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .setCategory(Notification.CATEGORY_SERVICE);
+        notification = builder.build();
+    }
+/*
+* 更新发送通知的函数
+* */
+    private void updateNotification(String calTime){
+        remoteView.setTextViewText(R.id.ny_time,calTime);
+        manager.notify(NOTIFY_ID_RECORDER,notification);
+    }
+
+    /*
+* 初始化通知当中的远程View
+* */
+    private void initRemoteView() {
+        remoteView = new RemoteViews(getPackageName(), R.layout.notify_recorder);
+        Intent intent = new Intent(this, RecorderActivity.class);
+        PendingIntent activity = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.ny_layout,activity);
+    }
+    /*
+    * 关闭通知
+    * */
+    private void closeNotification(){
+        manager.cancel(NOTIFY_ID_RECORDER);
     }
     //设置更新Activity的UI界面的回调接口
     public interface OnRefreshUIThreadListener{
@@ -59,6 +114,7 @@ public class RecorderService extends Service {
         if (onRefreshUIThreadListener!=null) {
             String timeStr = calTime(time);
             onRefreshUIThreadListener.onRefresh((int) db,timeStr);
+            updateNotification(timeStr);
         }
         return false;
     }
@@ -114,6 +170,7 @@ public class RecorderService extends Service {
             recorder.stop();
             recorder = null;
             time = 0;
+            closeNotification();
         }
     }
     private void setRecorder() {
@@ -148,5 +205,6 @@ public class RecorderService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopRecorder();
     }
 }
