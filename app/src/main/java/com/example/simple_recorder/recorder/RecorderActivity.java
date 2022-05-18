@@ -53,6 +53,7 @@ public class RecorderActivity extends AppCompatActivity {
             case R.id.iv_back:
                 if (recorderService.getRecorder()!=null) {
                     Intent intent = new Intent(this,AudioListActivity.class);
+                    startActivity(intent);
                 }else{
                     StartSystemPageUtils.goToHomePage(this);
                 }
