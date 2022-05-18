@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".audio.AudioListActivity"
     android:orientation="vertical"
-    android:background="@color/grey">
+    android:background="@color/grey"
+    android:descendantFocusability="blocksDescendants">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/audio_tbar"
         android:layout_width="match_parent"

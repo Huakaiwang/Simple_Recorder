@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.PopupMenu;
@@ -137,6 +138,7 @@ public class AudioListActivity extends AppCompatActivity {
         adapter.setOnSeekBarChangeListener(onSeekBarChangeListener);
         binding.audioIb.setOnClickListener(onClickListener);
     }
+    //点击录音按钮跳转录音界面
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -178,6 +180,9 @@ public class AudioListActivity extends AppCompatActivity {
     AdapterView.OnItemLongClickListener longClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            //ListView中item优先于子控件获取焦点
+            parent.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+            //绘制弹出菜单
             showPopMenu(view, position);
             return false;
         }

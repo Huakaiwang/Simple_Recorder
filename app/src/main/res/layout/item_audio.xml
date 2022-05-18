@@ -30,7 +30,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/tv_time"
         android:layout_alignParentRight="true"
-        android:src="@mipmap/red_play" />
+        android:src="@mipmap/red_play"
+        android:focusable="false"/>
 
     <TextView
         android:id="@+id/tv_duration"
@@ -54,6 +55,7 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            android:focusable="false"/>
     </LinearLayout>
 </RelativeLayout>
