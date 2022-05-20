@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.example.simple_recorder.audio.AudioListActivity;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
+import com.example.simple_recorder.notepad.NotepadActivity;
 import com.example.simple_recorder.utils.Contants;
 import com.example.simple_recorder.utils.IFileInter;
 import com.example.simple_recorder.utils.PermissionUtils;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
             if (message.what == 1) {
                 time--;
                 if (time==0) {
-                    startActivity(new Intent(MainActivity.this, AudioListActivity.class));
+                    startActivity(new Intent(MainActivity.this, NotepadActivity.class));
                     finish();
                 }else {
                     binding.mainTv.setText(time+"");

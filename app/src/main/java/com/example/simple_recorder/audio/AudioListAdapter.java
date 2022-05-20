@@ -95,6 +95,7 @@ public class AudioListAdapter extends BaseAdapter {
                 }
             }
         });
+        //拖动进度条可以改变播放进度
         holder.ab.pb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

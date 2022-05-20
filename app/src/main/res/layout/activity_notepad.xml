@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".audio.AudioListActivity"
-    android:orientation="vertical"
-    android:background="@color/grey"
-    android:descendantFocusability="blocksDescendants">
-    <!-- <androidx.appcompat.widget.Toolbar
-        android:id="@+id/audio_tbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:title="@string/app_name"/>-->
+    android:layout_height="match_parent">
+
     <RadioGroup
-        android:id="@+id/rg_tab"
+        android:id="@+id/rg_tab2"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
-        android:gravity="center_vertical"
         android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <RadioButton
@@ -26,36 +16,47 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@null"
             android:background="@drawable/textview_back_left"
+            android:button="@null"
             android:checked="true"
             android:gravity="center"
             android:paddingLeft="0dp"
             android:text="录音机" />
+
         <RadioButton
             android:id="@+id/rb_noter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@null"
             android:background="@drawable/textview_back_right"
+            android:button="@null"
             android:gravity="center"
             android:paddingLeft="0dp"
             android:text="记事本" />
     </RadioGroup>
     <ListView
-        android:id="@+id/audio_lv"
+        android:id="@+id/note_lv"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="@null"
-        android:dividerHeight="10dp"
-        android:padding="10dp"/>
-    <ImageButton
-        android:id="@+id/audio_ib"
+        android:layout_height="match_parent"
+        android:cacheColorHint="#00000000"
+        android:divider="#E4E4E4"
+        android:dividerHeight="1dp"
+        android:fadingEdge="none"
+        android:listSelector="#00000000"
+        android:scrollbars="none"
+        android:layout_below="@+id/rg_tab2"
+        android:layout_above="@id/note_add"
+        />
+
+    <ImageView
+        android:id="@+id/note_add"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:src="@mipmap/mic_on"
-        android:layout_margin="5dp"
-        android:layout_gravity="center_horizontal"/>
-</LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:src="@mipmap/icon_add" />
+</RelativeLayout>
