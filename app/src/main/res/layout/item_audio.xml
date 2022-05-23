@@ -28,10 +28,10 @@
         android:id="@+id/iv_play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/tv_time"
         android:layout_alignParentRight="true"
-        android:src="@mipmap/red_play"
-        android:focusable="false"/>
+        android:layout_centerVertical="true"
+        android:focusable="false"
+        android:src="@mipmap/red_play" />
 
     <TextView
         android:id="@+id/tv_duration"
@@ -46,7 +46,7 @@
         android:id="@+id/lv_controll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/iv_play"
+        android:layout_below="@id/tv_duration"
         android:orientation="horizontal"
         android:visibility="gone">
 

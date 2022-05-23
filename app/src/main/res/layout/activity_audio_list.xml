@@ -15,10 +15,12 @@
         app:title="@string/app_name"/>-->
     <RadioGroup
         android:id="@+id/rg_tab"
-        android:layout_width="fill_parent"
+        android:layout_width="200dp"
         android:layout_height="55dp"
+        android:layout_gravity="center_horizontal"
         android:gravity="center_vertical"
         android:layout_alignParentTop="true"
+
         android:orientation="horizontal">
 
         <RadioButton
@@ -27,21 +29,21 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:button="@null"
-            android:background="@drawable/textview_back_left"
+            android:background="@drawable/start_left"
             android:checked="true"
             android:gravity="center"
             android:paddingLeft="0dp"
-            android:text="录音机" />
+            android:text="语音备忘录" />
         <RadioButton
             android:id="@+id/rb_noter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:button="@null"
-            android:background="@drawable/textview_back_right"
+            android:background="@drawable/start_right"
             android:gravity="center"
             android:paddingLeft="0dp"
-            android:text="记事本" />
+            android:text="备忘录" />
     </RadioGroup>
     <ListView
         android:id="@+id/audio_lv"
@@ -53,9 +55,11 @@
         android:padding="10dp"/>
     <ImageButton
         android:id="@+id/audio_ib"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@mipmap/mic_on"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@mipmap/recorder_mic"
+        android:scaleType="fitCenter"
         android:layout_margin="5dp"
+        android:background="@color/grey"
         android:layout_gravity="center_horizontal"/>
 </LinearLayout>

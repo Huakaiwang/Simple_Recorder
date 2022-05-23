@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.KeyEvent;
@@ -43,11 +44,30 @@ public class RecorderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setDarkStatusIcon(true);
         binding = ActivityRecorderBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Intent intent = new Intent(this,RecorderService.class);
         bindService(intent,connection,BIND_AUTO_CREATE);
     }
+    /**
+     * 设置状态栏反色
+     */
+    protected void setDarkStatusIcon(boolean isDark) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = getWindow().getDecorView();
+            if (decorView != null) {
+                int vis = decorView.getSystemUiVisibility();
+                if (isDark) {
+                    vis |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                } else {
+                    vis &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                }
+                decorView.setSystemUiVisibility(vis);
+            }
+        }
+    }
+    //点击事件
     public void onClick(View view){
         switch (view.getId()) {
             case R.id.iv_back:

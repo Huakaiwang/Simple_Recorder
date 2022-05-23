@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 import com.example.simple_recorder.audio.AudioListActivity;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
             if (message.what == 1) {
                 time--;
                 if (time==0) {
-                    startActivity(new Intent(MainActivity.this, NotepadActivity.class));
+                    startActivity(new Intent(MainActivity.this, AudioListActivity.class));
                     finish();
                 }else {
                     binding.mainTv.setText(time+"");
@@ -49,9 +51,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        setDarkStatusIcon(true);
         binding.mainTv.setText(time+"");
         PermissionUtils.getInstance().onRequestPermission(this,permissions,listener);
     }
+    /**
+     * 设置状态栏反色
+     */
+    protected void setDarkStatusIcon(boolean isDark) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = getWindow().getDecorView();
+            if (decorView != null) {
+                int vis = decorView.getSystemUiVisibility();
+                if (isDark) {
+                    vis |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                } else {
+                    vis &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                }
+                decorView.setSystemUiVisibility(vis);
+            }
+        }
+    }
+
     PermissionUtils.OnPermissionCallbackListener listener = new PermissionUtils.OnPermissionCallbackListener() {
         @Override
         public void onGranted() {

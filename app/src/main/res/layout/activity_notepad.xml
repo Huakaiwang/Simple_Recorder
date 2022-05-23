@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/grey">
 
     <RadioGroup
         android:id="@+id/rg_tab2"
-        android:layout_width="fill_parent"
+        android:layout_width="200dp"
         android:layout_height="55dp"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/rb_recorder"
+            android:id="@+id/rb_recorder2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/textview_back_left"
             android:button="@null"
-            android:checked="true"
             android:gravity="center"
             android:paddingLeft="0dp"
-            android:text="录音机" />
+            android:text="语音备忘录" />
 
         <RadioButton
-            android:id="@+id/rb_noter"
+            android:id="@+id/rb_noter2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -32,15 +33,15 @@
             android:button="@null"
             android:gravity="center"
             android:paddingLeft="0dp"
-            android:text="记事本" />
+            android:text="备忘录" />
     </RadioGroup>
     <ListView
         android:id="@+id/note_lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:cacheColorHint="#00000000"
-        android:divider="#E4E4E4"
-        android:dividerHeight="1dp"
+        android:divider="@null"
+        android:dividerHeight="10dp"
+        android:padding="10dp"
         android:fadingEdge="none"
         android:listSelector="#00000000"
         android:scrollbars="none"
@@ -50,13 +51,9 @@
 
     <ImageView
         android:id="@+id/note_add"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
         android:src="@mipmap/icon_add" />
 </RelativeLayout>

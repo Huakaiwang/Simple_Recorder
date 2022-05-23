@@ -2,12 +2,14 @@ package com.example.simple_recorder.audio;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -17,9 +19,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 
 import com.example.simple_recorder.R;
@@ -27,6 +32,7 @@ import com.example.simple_recorder.audio.AudioService.AudioBinder;
 import com.example.simple_recorder.bean.AudioBean;
 import com.example.simple_recorder.databinding.ActivityAudioListBinding;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
+import com.example.simple_recorder.notepad.NotepadActivity;
 import com.example.simple_recorder.recorder.RecorderActivity;
 import com.example.simple_recorder.recorder.RecorderService;
 import com.example.simple_recorder.utils.AudioInfoDialog;
@@ -83,6 +89,16 @@ public class AudioListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityAudioListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        //设置状态栏颜色
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.grey));
+            //这是状态栏文字反色
+            setDarkStatusIcon(true);
+        }
+
+
         //绑定服务
         Intent intent = new Intent(this, AudioService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
@@ -98,6 +114,23 @@ public class AudioListActivity extends AppCompatActivity {
         setEvents();
 
 
+    }
+    /**
+     * 设置状态栏反色
+     */
+    protected void setDarkStatusIcon(boolean isDark) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = getWindow().getDecorView();
+            if (decorView != null) {
+                int vis = decorView.getSystemUiVisibility();
+                if (isDark) {
+                    vis |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                } else {
+                    vis &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                }
+                decorView.setSystemUiVisibility(vis);
+            }
+        }
     }
 //重写onKeyDown方法，使得点击返回键不退出app，而是跳转至桌面
     @Override
@@ -138,7 +171,20 @@ public class AudioListActivity extends AppCompatActivity {
         binding.audioLv.setOnItemLongClickListener(longClickListener);
         adapter.setOnSeekBarChangeListener(onSeekBarChangeListener);
         binding.audioIb.setOnClickListener(onClickListener);
+        binding.rgTab.setOnCheckedChangeListener(changeListener);
     }
+    //跳转记事本界面
+    RadioGroup.OnCheckedChangeListener changeListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (checkedId==R.id.rb_noter) {
+                Intent intent = new Intent(AudioListActivity.this, NotepadActivity.class);
+                startActivity(intent);
+                AudioListActivity.this.overridePendingTransition(0,0);
+                binding.rbNoter.setChecked(false);
+            }
+        }
+    };
     //点击录音按钮跳转录音界面
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -222,7 +268,7 @@ public class AudioListActivity extends AppCompatActivity {
         audioInfoDialog.show();
         audioInfoDialog.setDialogWidth();
         audioInfoDialog.setFileInfo(bean);
-        audioInfoDialog.setCanceledOnTouchOutside(false);
+        audioInfoDialog.setCanceledOnTouchOutside(true);
     }
 
     //重命名对话框

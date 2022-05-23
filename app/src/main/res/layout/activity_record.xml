@@ -35,7 +35,7 @@
         android:layout_above="@id/record_lay"
         android:layout_below="@id/layout_Rl"
         android:layout_weight="1"
-        android:background="#E1D8A9"
+        android:background="@color/white"
         android:gravity="top"
         android:inputType="textMultiLine"
         android:singleLine="false"
@@ -53,7 +53,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:src="@mipmap/icon_del"
-            android:background="#E1D8A9"
+            android:background="@color/white"
             android:scaleType="fitCenter" />
         <ImageButton
             android:id="@+id/record_add"
@@ -61,7 +61,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:src="@mipmap/icon_save"
-            android:background="#E1D8A9"
+            android:background="@color/white"
             android:scaleType="fitCenter" />
     </LinearLayout>
 
