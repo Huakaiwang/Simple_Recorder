@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Simple_Recorder">
         <activity
+            android:name=".expandelist.ExpandListActivity"
+            android:exported="false" />
+        <activity
             android:name=".notepad.RecordActivity"
             android:exported="false" />
         <activity

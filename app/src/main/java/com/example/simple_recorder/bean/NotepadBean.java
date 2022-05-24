@@ -2,6 +2,7 @@ package com.example.simple_recorder.bean;
 
 public class NotepadBean {
     private String id;
+    private String group_id;
     private String notepadContent;
     private String notepadTime;
 
@@ -19,6 +20,14 @@ public class NotepadBean {
 
     public void setNotepadContent(String notepadContent) {
         this.notepadContent = notepadContent;
+    }
+
+    public String getGroup_id() {
+        return group_id;
+    }
+
+    public void setGroup_id(String group_id) {
+        this.group_id = group_id;
     }
 
     public String getNotepadTime() {

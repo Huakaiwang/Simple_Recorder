@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey">
+
+    <RadioGroup
+        android:id="@+id/rg_tab3"
+        android:layout_width="200dp"
+        android:layout_height="55dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_recorder3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/textview_back_left"
+            android:button="@null"
+            android:gravity="center"
+            android:paddingLeft="0dp"
+            android:text="语音备忘录" />
+
+        <RadioButton
+            android:id="@+id/rb_noter3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/textview_back_right"
+            android:button="@null"
+            android:gravity="center"
+            android:paddingLeft="0dp"
+            android:text="备忘录" />
+    </RadioGroup>
+    <ExpandableListView
+        android:id="@+id/note_lv2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:dividerHeight="10dp"
+        android:padding="10dp"
+        android:fadingEdge="none"
+        android:listSelector="#00000000"
+        android:scrollbars="none"
+        android:layout_below="@+id/rg_tab3"
+        android:layout_above="@id/note_add2"
+        />
+
+    <ImageView
+        android:id="@+id/note_add2"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/icon_add" />
+</RelativeLayout>
