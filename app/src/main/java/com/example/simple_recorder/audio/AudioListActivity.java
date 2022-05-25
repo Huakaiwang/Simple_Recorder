@@ -32,6 +32,7 @@ import com.example.simple_recorder.audio.AudioService.AudioBinder;
 import com.example.simple_recorder.bean.AudioBean;
 import com.example.simple_recorder.databinding.ActivityAudioListBinding;
 import com.example.simple_recorder.databinding.ActivityMainBinding;
+import com.example.simple_recorder.expandelist.ExpandListActivity;
 import com.example.simple_recorder.notepad.NotepadActivity;
 import com.example.simple_recorder.recorder.RecorderActivity;
 import com.example.simple_recorder.recorder.RecorderService;
@@ -178,7 +179,7 @@ public class AudioListActivity extends AppCompatActivity {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
             if (checkedId==R.id.rb_noter) {
-                Intent intent = new Intent(AudioListActivity.this, NotepadActivity.class);
+                Intent intent = new Intent(AudioListActivity.this, ExpandListActivity.class);
                 startActivity(intent);
                 AudioListActivity.this.overridePendingTransition(0,0);
                 binding.rbNoter.setChecked(false);

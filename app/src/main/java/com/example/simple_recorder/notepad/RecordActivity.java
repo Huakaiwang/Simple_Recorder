@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.simple_recorder.R;
 import com.example.simple_recorder.databinding.ActivityRecordBinding;
+import com.example.simple_recorder.expandelist.ExpandListActivity;
 import com.example.simple_recorder.utils.DBUtils;
 import com.example.simple_recorder.utils.SQLiteHelper;
 
@@ -34,7 +35,6 @@ public class RecordActivity extends AppCompatActivity {
         initData();//初始化试图
         setEvent();//设置事件监听
     }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction()== MotionEvent.ACTION_DOWN) {
@@ -99,7 +99,7 @@ public class RecordActivity extends AppCompatActivity {
     View.OnClickListener backListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(RecordActivity.this, NotepadActivity.class);
+            Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
             startActivity(intent);
             finish();
         }
@@ -136,7 +136,7 @@ public class RecordActivity extends AppCompatActivity {
                 if (content.length() > 0) {
                     if (myHelper.updateDate(id, content, DBUtils.getTime())) {
                         Toast.makeText(RecordActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(RecordActivity.this, NotepadActivity.class);
+                        Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
@@ -149,7 +149,7 @@ public class RecordActivity extends AppCompatActivity {
                 if (content.length() > 0) {
                     if (myHelper.insertDate(content, DBUtils.getTime())) {
                         Toast.makeText(RecordActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(RecordActivity.this, NotepadActivity.class);
+                        Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
                         startActivity(intent);
                         finish();
                     } else {

@@ -86,11 +86,10 @@ public class ExpandeAdapter extends BaseExpandableListAdapter {
         if (convertView==null) {
             convertView = layoutInflater.inflate(R.layout.item_notepad,null);
             holder = new ViewHolder(convertView);
-            convertView.setTag(R.id.item_content,-1);
+            convertView.setTag(holder);
         }else {
             holder = (ViewHolder) convertView.getTag();
         }
-        Log.d("TAG", "getChildView: item创建了");
         NotepadBean notepadInfo = (NotepadBean) getChild(groupPosition,childPosition);
         holder.nb.itemContent.setText(notepadInfo.getNotepadContent());
         holder.nb.itemTime.setText(notepadInfo.getNotepadTime());
