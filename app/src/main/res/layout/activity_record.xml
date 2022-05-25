@@ -25,6 +25,27 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:padding="10dp"/>
+        <!--<Button
+            android:id="@+id/record_group"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/bt_group"
+            android:text="分组"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="normal" />-->
+        <Spinner
+            android:id="@+id/record_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:dropDownVerticalOffset="40dp"/>
     </RelativeLayout>
 
 

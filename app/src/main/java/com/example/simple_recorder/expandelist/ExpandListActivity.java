@@ -28,6 +28,7 @@ import com.example.simple_recorder.utils.DBUtils;
 import com.example.simple_recorder.utils.DialogUtils;
 import com.example.simple_recorder.utils.SQLiteHelper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -59,10 +60,6 @@ public class ExpandListActivity extends AppCompatActivity {
      */
     private void loadsDatas() {
         helper = new SQLiteHelper(this);
-        //测试
-        helper.insertGroup("默认");
-        helper.insertDate("测试测试", DBUtils.getTime());
-        helper.insertDate("测试测试2", DBUtils.getTime());
         gList = helper.queryGroup();
         for (int i = 0; i < gList.size(); i++) {
             List<NotepadBean> tempList = new ArrayList<>();
@@ -111,6 +108,7 @@ public class ExpandListActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(ExpandListActivity.this,RecordActivity.class);
+            intent.putExtra("gList",(Serializable) gList);
             startActivity(intent);
         }
     };
@@ -123,6 +121,8 @@ public class ExpandListActivity extends AppCompatActivity {
             Intent intent = new Intent(ExpandListActivity.this,RecordActivity.class);
             intent.putExtra("id",targetid);
             intent.putExtra("content",content);
+            intent.putExtra("gList",(Serializable) gList);
+            intent.putExtra("pos",checkList.get(groupPosition).get(childPosition).getGroup_id());
             startActivity(intent);
             return true;
         }
@@ -162,6 +162,8 @@ public class ExpandListActivity extends AppCompatActivity {
                         Intent intent = new Intent(ExpandListActivity.this,RecordActivity.class);
                         intent.putExtra("id",targetid);
                         intent.putExtra("content",content);
+                        intent.putExtra("gList",(Serializable) gList);
+                        intent.putExtra("pos",checkList.get(groupPosition).get(childPosition).getGroup_id());
                         startActivity(intent);
                         break;
                     case R.id.note_del:

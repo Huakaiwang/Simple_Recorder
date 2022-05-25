@@ -11,19 +11,28 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.simple_recorder.R;
+import com.example.simple_recorder.bean.NoteGroupBean;
 import com.example.simple_recorder.databinding.ActivityRecordBinding;
 import com.example.simple_recorder.expandelist.ExpandListActivity;
 import com.example.simple_recorder.utils.DBUtils;
 import com.example.simple_recorder.utils.SQLiteHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RecordActivity extends AppCompatActivity {
     private ActivityRecordBinding recordBinding;
     private String content;
     private String id;
+    private List<NoteGroupBean> gList;
+    private int group;
     private SQLiteHelper myHelper;
 
     @Override
@@ -34,6 +43,7 @@ public class RecordActivity extends AppCompatActivity {
         setDarkStatusIcon(true);
         initData();//初始化试图
         setEvent();//设置事件监听
+
     }
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -93,8 +103,20 @@ public class RecordActivity extends AppCompatActivity {
         recordBinding.recordAdd.setOnTouchListener(touchListener);
         recordBinding.recordDel.setOnClickListener(delOnClickListener);
         recordBinding.recordAdd.setOnClickListener(addOrUpdateListener);
+        recordBinding.recordSpinner.setOnItemSelectedListener(spinnerClick);
     }
+    //下拉选择框事件
+    AdapterView.OnItemSelectedListener spinnerClick = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            group = Integer.parseInt(gList.get(position).getGroupId());
+        }
 
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
     //单击返回
     View.OnClickListener backListener = new View.OnClickListener() {
         @Override
@@ -134,7 +156,7 @@ public class RecordActivity extends AppCompatActivity {
             Log.d("TAG", "onClick: " + content);
             if (id != null) {//修改
                 if (content.length() > 0) {
-                    if (myHelper.updateDate(id, content, DBUtils.getTime())) {
+                    if (myHelper.updateDate(id, content, DBUtils.getTime(),group)) {
                         Toast.makeText(RecordActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
                         startActivity(intent);
@@ -147,7 +169,7 @@ public class RecordActivity extends AppCompatActivity {
                 }
             } else {//增加
                 if (content.length() > 0) {
-                    if (myHelper.insertDate(content, DBUtils.getTime())) {
+                    if (myHelper.insertDate(content, DBUtils.getTime(),group)) {
                         Toast.makeText(RecordActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
                         startActivity(intent);
@@ -166,6 +188,16 @@ public class RecordActivity extends AppCompatActivity {
     protected void initData() {
         myHelper = new SQLiteHelper(this);
         Intent intent = getIntent();
+        gList = (List<NoteGroupBean>) intent.getSerializableExtra("gList");
+        int pos = Integer.parseInt(intent.getStringExtra("pos"));
+        List tempList = new ArrayList();
+        for (int i = 0; i < gList.size(); i++) {
+            tempList.add(gList.get(i).getGroupName());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, tempList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        recordBinding.recordSpinner.setAdapter(adapter);
+        recordBinding.recordSpinner.setSelection(pos-1,true);
         if (intent != null) {
             id = intent.getStringExtra("id");
             if (id != null) {

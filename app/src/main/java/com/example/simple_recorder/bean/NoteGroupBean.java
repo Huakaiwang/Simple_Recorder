@@ -1,6 +1,8 @@
 package com.example.simple_recorder.bean;
 
-public class NoteGroupBean {
+import java.io.Serializable;
+
+public class NoteGroupBean implements Serializable {
     private String groupId;
     private String groupName;
 

@@ -7,7 +7,7 @@
     <RadioGroup
         android:id="@+id/rg_tab3"
         android:layout_width="200dp"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:gravity="center_vertical"
@@ -16,8 +16,10 @@
         <RadioButton
             android:id="@+id/rb_recorder3"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:background="@drawable/textview_back_left"
             android:button="@null"
             android:gravity="center"
@@ -27,8 +29,10 @@
         <RadioButton
             android:id="@+id/rb_noter3"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:background="@drawable/textview_back_right"
             android:button="@null"
             android:gravity="center"

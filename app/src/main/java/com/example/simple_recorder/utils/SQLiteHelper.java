@@ -20,7 +20,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public SQLiteHelper(Context context){
         //通过super()方法创建一个名为Notepad的数据库
         super(context, DBUtils.DATABASE_NAME, null, DBUtils.DATABASE_VERSION);
-        deleteDatabase(context);
          sqLiteDatabase = this.getWritableDatabase();
     }
     @Override
@@ -74,11 +73,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return list;
     }
     //增加数据
-    public boolean insertDate(String userContent,String userTime){
+    public boolean insertDate(String userContent,String userTime,int group){
         ContentValues values = new ContentValues();
         values.put(DBUtils.NOTEPAD_CONTENT,userContent);
         values.put(DBUtils.NOTEPAD_TIME,userTime);
-        values.put(DBUtils.NOTEPAD_GROUP_ID,1);
+        values.put(DBUtils.NOTEPAD_GROUP_ID,group);
         return sqLiteDatabase.insert(DBUtils.DATABASE_TABLE,null,values) > 0;
     }
     //删除数据
@@ -88,10 +87,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return sqLiteDatabase.delete(DBUtils.DATABASE_TABLE,sql,contentValuesArray) > 0;
     }
     //修改数据
-    public boolean updateDate(String id,String content,String userTime){
+    public boolean updateDate(String id,String content,String userTime,int group){
         ContentValues values = new ContentValues();
         values.put(DBUtils.NOTEPAD_CONTENT,content);
         values.put(DBUtils.NOTEPAD_TIME,userTime);
+        values.put(DBUtils.NOTEPAD_GROUP_ID,group);
         String sql = DBUtils.NOTEPAD_ID+"=?";
         String[] strings = new String[]{id};
         return sqLiteDatabase.update(DBUtils.DATABASE_TABLE,values,sql,strings) > 0 ;
