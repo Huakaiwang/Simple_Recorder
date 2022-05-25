@@ -15,16 +15,17 @@
             android:onClick="onClick"
             android:src="@mipmap/icon_back"
             android:layout_marginLeft="10dp"/>
+
         <TextView
             android:id="@+id/record_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:padding="10dp"
             android:text="记录"
-            android:textSize="20sp"
             android:textColor="@color/black"
-            android:textStyle="bold"
-            android:padding="10dp"/>
+            android:textSize="20sp"
+            android:textStyle="bold" />
         <!--<Button
             android:id="@+id/record_group"
             android:layout_width="wrap_content"
@@ -41,7 +42,11 @@
         <Spinner
             android:id="@+id/record_spinner"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center_vertical"
+            android:popupBackground="@drawable/shape_for_custom_spinner"
+            android:background="@drawable/selector_for_custom_spinner"
             android:layout_marginRight="20dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"

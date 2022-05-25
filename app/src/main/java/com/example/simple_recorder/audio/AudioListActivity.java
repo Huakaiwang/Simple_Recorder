@@ -331,7 +331,6 @@ public class AudioListActivity extends AppCompatActivity {
     //加载文件数据
     private void loadDatas() {
         //1.获取指定路径下的音源文件
-
         File fetchFile = new File(Contants.PATH_FETCH_DIR_RECORD);
         File[] listFiles = fetchFile.listFiles(new FilenameFilter() {
             @Override

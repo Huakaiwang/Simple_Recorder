@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.PopupMenu;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.example.simple_recorder.R;
 import com.example.simple_recorder.audio.AudioListActivity;
@@ -26,6 +27,7 @@ import com.example.simple_recorder.notepad.NotepadAdapter;
 import com.example.simple_recorder.notepad.RecordActivity;
 import com.example.simple_recorder.utils.DBUtils;
 import com.example.simple_recorder.utils.DialogUtils;
+import com.example.simple_recorder.utils.GroupDialog;
 import com.example.simple_recorder.utils.SQLiteHelper;
 
 import java.io.Serializable;
@@ -141,10 +143,82 @@ public class ExpandListActivity extends AppCompatActivity {
                 //绘制弹出菜单
                 showPopMenu(view, groupPosition,childPosition);
                 Log.d("TAG", "onItemLongClick: "+position);
+            }else{
+                PopupMenu popupGroupMenu = new PopupMenu(ExpandListActivity.this, view, Gravity.RIGHT);
+                MenuInflater menuInflater = popupGroupMenu.getMenuInflater();
+                menuInflater.inflate(R.menu.group_menu, popupGroupMenu.getMenu());
+                popupGroupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.group_add:
+                                showAddDialog();
+                                expandeAdapter.notifyDataSetChanged();
+                                break;
+                            case R.id.group_update:
+                                showUpdateDialog(groupPosition);
+                                expandeAdapter.notifyDataSetChanged();
+                                break;
+                            case R.id.group_del:
+                                delGroup(groupPosition);
+                                expandeAdapter.notifyDataSetChanged();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                popupGroupMenu.show();
             }
             return true;
         }
     };
+    private void delGroup(int groupPosition){
+        NoteGroupBean bean = gList.get(groupPosition);
+        if (helper.deleteGroup(bean.getGroupId())) {
+            Toast.makeText(ExpandListActivity.this, "分组删除成功", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(ExpandListActivity.this, "分组删除成功", Toast.LENGTH_SHORT).show();
+        }
+        expandeAdapter.notifyDataSetChanged();
+    }
+    //修改分组对话框
+    private void showUpdateDialog(int groupPosition) {
+        NoteGroupBean bean = gList.get(groupPosition);
+        GroupDialog groupDialog = new GroupDialog(this);
+        groupDialog.show();
+        groupDialog.setDialogWidth();
+        groupDialog.setTitleRename();
+        groupDialog.setTipText(bean.getGroupName());
+        groupDialog.setOnEnsureListener(new GroupDialog.OnEnsureListener() {
+            @Override
+            public void onEnsure(String msg) {
+                if (helper.updateGroup(bean.getGroupId(), msg)) {
+                    Toast.makeText(ExpandListActivity.this, "分组修改成功", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(ExpandListActivity.this, "分组修改失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        expandeAdapter.notifyDataSetChanged();
+    }
+//新增分组对话框
+    private void showAddDialog() {
+        GroupDialog groupDialog = new GroupDialog(this);
+        groupDialog.show();
+        groupDialog.setDialogWidth();
+        groupDialog.setOnEnsureListener(new GroupDialog.OnEnsureListener() {
+            @Override
+            public void onEnsure(String msg) {
+                if (helper.insertGroup(msg)) {
+                    Toast.makeText(ExpandListActivity.this, "分组添加成功", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(ExpandListActivity.this, "分组添加失败", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+        expandeAdapter.notifyDataSetChanged();
+    }
     /**
      * 弹出对话框
      */

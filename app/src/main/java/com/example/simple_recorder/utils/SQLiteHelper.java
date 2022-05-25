@@ -14,6 +14,7 @@ import com.example.simple_recorder.bean.NotepadBean;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class SQLiteHelper extends SQLiteOpenHelper {
     private SQLiteDatabase sqLiteDatabase;
     //创建数据库
@@ -30,6 +31,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("create table "+DBUtils.DATABASE_GROUP_TABLE+
                 "("+ DBUtils.NOTEPAD_GROUP_ID +" integer primary key autoincrement,"+
                 DBUtils.NOTEPAD_GROUP_NAME+" text)");
+        insertGroup("默认");
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

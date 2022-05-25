@@ -14,10 +14,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.simple_recorder.R;
 import com.example.simple_recorder.bean.NoteGroupBean;
 import com.example.simple_recorder.databinding.ActivityRecordBinding;
 import com.example.simple_recorder.expandelist.ExpandListActivity;
@@ -43,7 +41,6 @@ public class RecordActivity extends AppCompatActivity {
         setDarkStatusIcon(true);
         initData();//初始化试图
         setEvent();//设置事件监听
-
     }
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -104,6 +101,7 @@ public class RecordActivity extends AppCompatActivity {
         recordBinding.recordDel.setOnClickListener(delOnClickListener);
         recordBinding.recordAdd.setOnClickListener(addOrUpdateListener);
         recordBinding.recordSpinner.setOnItemSelectedListener(spinnerClick);
+
     }
     //下拉选择框事件
     AdapterView.OnItemSelectedListener spinnerClick = new AdapterView.OnItemSelectedListener() {
