@@ -47,7 +47,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public boolean deleteGroup(String groupId){
         String sql = DBUtils.NOTEPAD_GROUP_ID+"=?";
         String[] contentValuesArray = new String[]{String.valueOf(groupId)};
-        return sqLiteDatabase.delete(DBUtils.DATABASE_GROUP_TABLE,null,contentValuesArray) >0;
+        return sqLiteDatabase.delete(DBUtils.DATABASE_GROUP_TABLE,sql,contentValuesArray) >0;
     }
     //修改分组表数据
     public boolean updateGroup(String groupId ,String groupName){

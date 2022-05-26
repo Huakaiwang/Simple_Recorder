@@ -6,10 +6,18 @@
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
     android:background="@drawable/bg_audio">
+    <ImageView
+        android:id="@+id/item_icon_note"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_note"
+        android:layout_centerVertical="true"/>
     <TextView
         android:id="@+id/item_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/item_icon_note"
+        android:layout_marginLeft="15dp"
         android:text="这是我的记事本内容1111111111111"
         android:textSize="20sp"
         android:textStyle="normal"
@@ -24,9 +32,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_content"
-        android:textColor="#fb7a6a"
+        android:textColor="#C0C0C0"
         android:text="2022年5月20日 15：35：21"
         android:layout_marginTop="5dp"
-        android:layout_centerHorizontal="true"
+        android:layout_alignLeft="@id/item_content"
         />
 </RelativeLayout>

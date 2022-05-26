@@ -172,13 +172,25 @@ public class ExpandListActivity extends AppCompatActivity {
             return true;
         }
     };
+    //删除分组对话框
     private void delGroup(int groupPosition){
         NoteGroupBean bean = gList.get(groupPosition);
-        if (helper.deleteGroup(bean.getGroupId())) {
-            Toast.makeText(ExpandListActivity.this, "分组删除成功", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(ExpandListActivity.this, "分组删除成功", Toast.LENGTH_SHORT).show();
-        }
+        DialogUtils.showNormalDialog(this, "提示信息", "删除后将无法恢复,是否删除该指定分组?",
+                "确定", new DialogUtils.OnLeftClickListener() {
+                    @Override
+                    public void onLeftClick() {
+                        //从数据库删除指定的分组
+                        if (helper.deleteGroup(bean.getGroupId())) {
+                            Toast.makeText(ExpandListActivity.this, "分组删除成功", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(ExpandListActivity.this, "分组删除成功", Toast.LENGTH_SHORT).show();
+                        }
+                        //从数组中删除指定的分组
+                        gList.remove(groupPosition);
+                        expandeAdapter.notifyDataSetChanged();
+                    }
+                },"取消",null);
+
         expandeAdapter.notifyDataSetChanged();
     }
     //修改分组对话框
@@ -193,6 +205,7 @@ public class ExpandListActivity extends AppCompatActivity {
             @Override
             public void onEnsure(String msg) {
                 if (helper.updateGroup(bean.getGroupId(), msg)) {
+                    loadsDatas();
                     Toast.makeText(ExpandListActivity.this, "分组修改成功", Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(ExpandListActivity.this, "分组修改失败", Toast.LENGTH_SHORT).show();
@@ -210,6 +223,7 @@ public class ExpandListActivity extends AppCompatActivity {
             @Override
             public void onEnsure(String msg) {
                 if (helper.insertGroup(msg)) {
+                    loadsDatas();
                     Toast.makeText(ExpandListActivity.this, "分组添加成功", Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(ExpandListActivity.this, "分组添加失败", Toast.LENGTH_SHORT).show();

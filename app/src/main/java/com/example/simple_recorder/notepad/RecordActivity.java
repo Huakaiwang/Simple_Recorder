@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.simple_recorder.bean.NoteGroupBean;
@@ -31,6 +33,7 @@ public class RecordActivity extends AppCompatActivity {
     private String id;
     private List<NoteGroupBean> gList;
     private int group;
+    private int pos;
     private SQLiteHelper myHelper;
 
     @Override
@@ -107,6 +110,11 @@ public class RecordActivity extends AppCompatActivity {
     AdapterView.OnItemSelectedListener spinnerClick = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            TextView tv = (TextView)view;
+            tv.setGravity(android.view.Gravity.CENTER_HORIZONTAL);//设置居中
+            tv.setMaxEms(3);
+            tv.setEllipsize(TextUtils.TruncateAt.END);
+            tv.setSingleLine(true);
             group = Integer.parseInt(gList.get(position).getGroupId());
         }
 
@@ -187,7 +195,11 @@ public class RecordActivity extends AppCompatActivity {
         myHelper = new SQLiteHelper(this);
         Intent intent = getIntent();
         gList = (List<NoteGroupBean>) intent.getSerializableExtra("gList");
-        int pos = Integer.parseInt(intent.getStringExtra("pos"));
+        if (intent.getStringExtra("pos")!=null) {
+             pos = Integer.parseInt(intent.getStringExtra("pos"));
+        }else {
+             pos = 0;
+        }
         List tempList = new ArrayList();
         for (int i = 0; i < gList.size(); i++) {
             tempList.add(gList.get(i).getGroupName());
@@ -199,10 +211,10 @@ public class RecordActivity extends AppCompatActivity {
         if (intent != null) {
             id = intent.getStringExtra("id");
             if (id != null) {
-                recordBinding.recordTitle.setText("修改记录");
+                recordBinding.recordTitle.setText("修改");
                 recordBinding.recordContent.setText(intent.getStringExtra("content"));
             } else {
-                recordBinding.recordTitle.setText("添加记录");
+                recordBinding.recordTitle.setText("添加");
             }
         }
 
