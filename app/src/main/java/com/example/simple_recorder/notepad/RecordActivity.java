@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -22,6 +23,7 @@ import com.example.simple_recorder.bean.NoteGroupBean;
 import com.example.simple_recorder.databinding.ActivityRecordBinding;
 import com.example.simple_recorder.expandelist.ExpandListActivity;
 import com.example.simple_recorder.utils.DBUtils;
+import com.example.simple_recorder.utils.DialogUtils;
 import com.example.simple_recorder.utils.SQLiteHelper;
 
 import java.util.ArrayList;
@@ -35,6 +37,50 @@ public class RecordActivity extends AppCompatActivity {
     private int group;
     private int pos;
     private SQLiteHelper myHelper;
+    private String oldcontext;
+    private int oldGroup;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            content = recordBinding.recordContent.getText().toString().trim();
+            if (id != null) {//修改
+                Log.d("TAG", "onKeyDown: "+content.equals(oldcontext));
+                boolean same = content.equals(oldcontext);
+                if (content.length() > 0 && !same || group!=oldGroup) {
+                    DialogUtils.showNormalDialog(this, "提示信息", "修改未保存，是否保存?", "确定", new DialogUtils.OnLeftClickListener() {
+                        @Override
+                        public void onLeftClick() {
+                            if (myHelper.updateDate(id, content, DBUtils.getTime(),group)) {
+                                Toast.makeText(RecordActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(RecordActivity.this, "修改失败", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    },"取消",null);
+                }
+            } else {//增加
+                if (content.length() > 0) {
+                    DialogUtils.showNormalDialog(this, "提示信息", "未保存，是否保存?", "确定", new DialogUtils.OnLeftClickListener() {
+                        @Override
+                        public void onLeftClick() {
+                            if (myHelper.insertDate(content, DBUtils.getTime(),group)) {
+                                Toast.makeText(RecordActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(RecordActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    },"取消",null);
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,9 +173,46 @@ public class RecordActivity extends AppCompatActivity {
     View.OnClickListener backListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
-            startActivity(intent);
-            finish();
+                content = recordBinding.recordContent.getText().toString().trim();
+                if (id != null) {//修改
+                    Log.d("TAG", "onKeyDown: "+content.equals(oldcontext));
+                    boolean same = content.equals(oldcontext);
+                    if (content.length() > 0 && !same || group!=oldGroup) {
+                        DialogUtils.showNormalDialog(RecordActivity.this, "提示信息", "修改未保存，是否保存?", "确定", new DialogUtils.OnLeftClickListener() {
+                            @Override
+                            public void onLeftClick() {
+                                if (myHelper.updateDate(id, content, DBUtils.getTime(),group)) {
+                                    Toast.makeText(RecordActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(RecordActivity.this, "修改失败", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        },"取消",null);
+                    }
+                } else {//增加
+                    if (content.length() > 0) {
+                        DialogUtils.showNormalDialog(RecordActivity.this, "提示信息", "未保存，是否保存?", "确定", new DialogUtils.OnLeftClickListener() {
+                            @Override
+                            public void onLeftClick() {
+                                if (myHelper.insertDate(content, DBUtils.getTime(),group)) {
+                                    Toast.makeText(RecordActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(RecordActivity.this, ExpandListActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(RecordActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        },"取消",null);
+                    }else{
+                        Intent back = new Intent(RecordActivity.this,ExpandListActivity.class);
+                        startActivity(back);
+                        finish();
+                    }
+                }
         }
     };
     //设置按压效果
@@ -196,6 +279,8 @@ public class RecordActivity extends AppCompatActivity {
         Intent intent = getIntent();
         gList = (List<NoteGroupBean>) intent.getSerializableExtra("gList");
         group = Integer.parseInt(intent.getStringExtra("group"));
+        oldcontext = intent.getStringExtra("content");
+        oldGroup = group;
         if (intent.getStringExtra("pos")!=null) {
              pos = Integer.parseInt(intent.getStringExtra("pos"));
         }else {
