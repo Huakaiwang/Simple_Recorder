@@ -195,6 +195,7 @@ public class RecordActivity extends AppCompatActivity {
         myHelper = new SQLiteHelper(this);
         Intent intent = getIntent();
         gList = (List<NoteGroupBean>) intent.getSerializableExtra("gList");
+        group = Integer.parseInt(intent.getStringExtra("group"));
         if (intent.getStringExtra("pos")!=null) {
              pos = Integer.parseInt(intent.getStringExtra("pos"));
         }else {
@@ -207,6 +208,7 @@ public class RecordActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, tempList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         recordBinding.recordSpinner.setAdapter(adapter);
+        Log.d("TAG", "initData: "+pos);
         recordBinding.recordSpinner.setSelection(pos-1,true);
         if (intent != null) {
             id = intent.getStringExtra("id");

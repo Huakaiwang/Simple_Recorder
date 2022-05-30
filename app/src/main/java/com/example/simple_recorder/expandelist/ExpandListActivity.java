@@ -2,17 +2,24 @@ package com.example.simple_recorder.expandelist;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -39,9 +46,11 @@ import java.util.List;
 public class ExpandListActivity extends AppCompatActivity {
     private ActivityExpandListBinding expandBinding;
     private ExpandeAdapter expandeAdapter;
+    private NotepadAdapter notepadAdapter;
     private List<NoteGroupBean> gList;
     private SQLiteHelper helper;
     private List<NotepadBean> mList;
+    private List<NotepadBean> searchList;
     private List<List<NotepadBean>> checkList = new ArrayList<List<NotepadBean>>();
     private String targetid;
     private String content;
@@ -92,7 +101,89 @@ public class ExpandListActivity extends AppCompatActivity {
         expandBinding.noteLv2.setOnItemLongClickListener(longClickListener);
         expandBinding.noteAdd2.setOnClickListener(onClickListener);
         expandBinding.rgTab3.setOnCheckedChangeListener(checkedChangeListener);
+        expandBinding.edSearch.setOnFocusChangeListener(focusChangeListener);
+        expandBinding.edSearch.addTextChangedListener(textWatcher);
+        expandBinding.ivSearchBack.setOnClickListener(backSearchListener);
+        expandBinding.noteLv.setOnItemClickListener(searchItemListener);
     }
+    //搜索结果的点击事件
+    AdapterView.OnItemClickListener searchItemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            targetid = searchList.get(position).getId();
+            content = searchList.get(position).getNotepadContent();
+            Intent intent = new Intent(ExpandListActivity.this,RecordActivity.class);
+            intent.putExtra("id",targetid);
+            intent.putExtra("content",content);
+            intent.putExtra("gList",(Serializable) gList);
+            intent.putExtra("group",searchList.get(position).getGroup_id());
+            Log.d("TAG", "onChildClick: "+gList.size());
+            intent.putExtra("pos",searchList.get(position).getGroup_id());
+            startActivity(intent);
+        }
+    };
+    //推出搜索界面
+    View.OnClickListener backSearchListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            expandBinding.edSearch.setText("");
+            expandBinding.noteLv2.setVisibility(View.VISIBLE);
+            expandBinding.noteLv.setVisibility(View.GONE);
+            expandBinding.ivSearchBack.setVisibility(View.GONE);
+            expandBinding.edSearch.clearFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(),0);
+        }
+    };
+    //搜索界面
+    View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+                expandBinding.edSearch.setText("  ");
+                expandBinding.noteLv2.setVisibility(View.GONE);
+                expandBinding.noteLv.setVisibility(View.VISIBLE);
+                expandBinding.ivSearchBack.setVisibility(View.VISIBLE);
+            }
+        }
+    };
+    //监听输入框内容改变，实时检索数据库并显示
+    TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String detail = expandBinding.edSearch.getText().toString().trim();
+            if (detail.equals("")) {
+                searchList= new ArrayList<>();
+            }else {
+                searchList= helper.queryByContent(detail);
+                //对数组进行排序
+                Collections.sort(searchList, new Comparator<NotepadBean>() {
+                    @Override
+                    public int compare(NotepadBean o1, NotepadBean o2) {
+                        if (toInt(o1.getNotepadTime())<toInt(o2.getNotepadTime())) {
+                            return 1;
+                        }else if (toInt(o1.getNotepadTime())==toInt(o2.getNotepadTime())){
+                            return 0;
+                        }
+                        return -1;
+                    }
+                });
+            }
+            notepadAdapter = new NotepadAdapter(ExpandListActivity.this,searchList);
+            expandBinding.noteLv.setAdapter(notepadAdapter);
+            notepadAdapter.notifyDataSetChanged();
+        }
+    };
     //跳转至录音机界面
     RadioGroup.OnCheckedChangeListener checkedChangeListener = new RadioGroup.OnCheckedChangeListener() {
         @Override
@@ -110,6 +201,7 @@ public class ExpandListActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(ExpandListActivity.this,RecordActivity.class);
+            intent.putExtra("group","0");
             intent.putExtra("gList",(Serializable) gList);
             startActivity(intent);
         }
@@ -124,6 +216,8 @@ public class ExpandListActivity extends AppCompatActivity {
             intent.putExtra("id",targetid);
             intent.putExtra("content",content);
             intent.putExtra("gList",(Serializable) gList);
+            intent.putExtra("group",checkList.get(groupPosition).get(childPosition).getGroup_id());
+            Log.d("TAG", "onChildClick: "+gList.size());
             intent.putExtra("pos",checkList.get(groupPosition).get(childPosition).getGroup_id());
             startActivity(intent);
             return true;
@@ -251,6 +345,7 @@ public class ExpandListActivity extends AppCompatActivity {
                         intent.putExtra("id",targetid);
                         intent.putExtra("content",content);
                         intent.putExtra("gList",(Serializable) gList);
+                        intent.putExtra("group",checkList.get(groupPosition).get(childPosition).getGroup_id());
                         intent.putExtra("pos",checkList.get(groupPosition).get(childPosition).getGroup_id());
                         startActivity(intent);
                         break;

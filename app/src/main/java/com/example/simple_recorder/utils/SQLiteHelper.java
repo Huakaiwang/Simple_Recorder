@@ -31,7 +31,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("create table "+DBUtils.DATABASE_GROUP_TABLE+
                 "("+ DBUtils.NOTEPAD_GROUP_ID +" integer primary key autoincrement,"+
                 DBUtils.NOTEPAD_GROUP_NAME+" text)");
-        insertGroup("默认");
+        //创建数据库时创建默认分组
+        db.execSQL("insert into Notegroup(groupname) values(?)",new Object[]{"默认"});
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -123,6 +124,27 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         List<NotepadBean> list = new ArrayList<>();
         String[] strings = new String[]{groupId};
         Cursor cursor = sqLiteDatabase.query(DBUtils.DATABASE_TABLE, null, DBUtils.NOTEPAD_GROUP_ID+"=?", strings, null, null, null);
+        if(cursor!=null){
+            while(cursor.moveToNext()){
+                NotepadBean noteInfo = new NotepadBean();
+                String id = String.valueOf(cursor.getInt((int)cursor.getColumnIndex(DBUtils.NOTEPAD_ID)));
+                String content = cursor.getString((int) cursor.getColumnIndex(DBUtils.NOTEPAD_CONTENT));
+                String group_id = String.valueOf(cursor.getInt((int)cursor.getColumnIndex(DBUtils.NOTEPAD_GROUP_ID)));
+                String time = cursor.getString((int)cursor.getColumnIndex(DBUtils.NOTEPAD_TIME));
+                noteInfo.setId(id);
+                noteInfo.setNotepadContent(content);
+                noteInfo.setGroup_id(group_id);
+                noteInfo.setNotepadTime(time);
+                list.add(noteInfo);
+            }
+            cursor.close();
+        }
+        return list;
+    }
+    public List<NotepadBean> queryByContent(String detail){
+        List<NotepadBean> list = new ArrayList<>();
+        String[] strings = new String[]{"%"+detail+"%"};
+        Cursor cursor = sqLiteDatabase.query(DBUtils.DATABASE_TABLE, null, DBUtils.NOTEPAD_CONTENT+" like ?", strings, null, null, null);
         if(cursor!=null){
             while(cursor.moveToNext()){
                 NotepadBean noteInfo = new NotepadBean();

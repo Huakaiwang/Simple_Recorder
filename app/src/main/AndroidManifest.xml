@@ -16,6 +16,29 @@
         android:roundIcon="@mipmap/ic_app_recorder"
         android:supportsRtl="true"
         android:theme="@style/Theme.Simple_Recorder">
+        <service
+            android:name=".wdiget.WdigetService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.user.widget.UPDATE_ALL"/>
+                <action android:name="android.appwidget.action.EXAMPLE_APP_WIDGET_SERVICE" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".wdiget.NoteWdigetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.user.widget.UPDATE_ALL"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/note_wdiget" />
+        </receiver>
+
         <activity
             android:name=".expandelist.ExpandListActivity"
             android:exported="false" />
@@ -43,7 +66,8 @@
 
         <activity
             android:name=".audio.AudioListActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
