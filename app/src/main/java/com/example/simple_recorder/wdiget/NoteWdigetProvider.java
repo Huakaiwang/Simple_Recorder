@@ -20,6 +20,8 @@ import com.example.simple_recorder.bean.NotepadBean;
 import com.example.simple_recorder.expandelist.ExpandListActivity;
 import com.example.simple_recorder.utils.SQLiteHelper;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -52,9 +54,36 @@ public class NoteWdigetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         Log.d("TAG", "onReceive: 我被调用了222");
         super.onReceive(context, intent);
+        mHelper = new SQLiteHelper(context);
         if (ACTION_UPDATE_ALL.equals(intent.getAction())) {
-            Log.d("TAG", "onReceive: 我被调用了");
-            UpdateWediget(context,AppWidgetManager.getInstance(context),idSet);
+            mList = mHelper.query();
+            //对数组进行排序
+            Collections.sort(mList, new Comparator<NotepadBean>() {
+                @Override
+                public int compare(NotepadBean o1, NotepadBean o2) {
+                    if (toInt(o1.getNotepadTime()) < toInt(o2.getNotepadTime())) {
+                        return 1;
+                    } else if (toInt(o1.getNotepadTime()) == toInt(o2.getNotepadTime())) {
+                        return 0;
+                    }
+                    return -1;
+                }
+            });
+            // 创建一个intent对象
+            Intent intent2 = new Intent(context, ExpandListActivity.class);
+            // 创建一个PandingIntent
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent2, 0);
+            // RemoteViews代表的是我们创建的所有的appwidget的控件
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.note_wdiget_layout);
+            //填充数据
+            String content = mList.get(0).getNotepadContent();
+            String time = mList.get(0).getNotepadTime();
+            Log.d("TAG", "UpdateWediget: "+mList.get(0).getGroup_id());
+            remoteViews.setTextViewText(R.id.wdiget_content, content);
+            remoteViews.setTextViewText(R.id.wdiget_time, time);
+            AppWidgetManager appwidgetManager = AppWidgetManager.getInstance(context);
+            ComponentName componentname = new ComponentName(context, NoteWdigetProvider.class);
+            appwidgetManager.updateAppWidget(componentname, remoteViews);
         }
 
     }
@@ -62,7 +91,7 @@ public class NoteWdigetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-        idSet = appWidgetIds;
+        idSet = appWidgetIds.clone();
         UpdateWediget(context,appWidgetManager,appWidgetIds);
     }
 
@@ -81,7 +110,9 @@ public class NoteWdigetProvider extends AppWidgetProvider {
         super.onEnabled(context);
         ACTIOn_SERVICE.setPackage(context.getPackageName());
         mcontext = context.getApplicationContext();
+        ACTIOn_SERVICE.setClass(context,WdigetService.class);
         mcontext.bindService(ACTIOn_SERVICE,myconnection,context.BIND_AUTO_CREATE);
+        context.startService(ACTIOn_SERVICE);
     }
 
     @Override
@@ -96,7 +127,9 @@ public class NoteWdigetProvider extends AppWidgetProvider {
     public void onRestored(Context context, int[] oldWidgetIds, int[] newWidgetIds) {
         super.onRestored(context, oldWidgetIds, newWidgetIds);
     }
+
     private void UpdateWediget(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        Log.d("TAG", "UpdateWediget: "+appWidgetIds.length);
         if (appWidgetIds.length != 0){
         for (int i = 0; i < appWidgetIds.length; i++) {
             mHelper = new SQLiteHelper(context);

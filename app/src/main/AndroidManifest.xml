@@ -30,6 +30,7 @@
             android:name=".wdiget.NoteWdigetProvider"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.appwidget.action.EXAMPLE_APP_WIDGET_SERVICE" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.example.user.widget.UPDATE_ALL"/>
             </intent-filter>

@@ -38,7 +38,7 @@ public class WdigetService extends Service  {
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        return mBinder;
+        return new LocalBinder();
     }
     private class UpdateThread extends Thread{
         @Override
@@ -49,6 +49,7 @@ public class WdigetService extends Service  {
                     Intent intent =new Intent(ACTION_UPDATE_ALL);
                     intent.setPackage(context.getPackageName());
                     sendBroadcast(intent);
+                    Log.d("TAG", "run: 线程执行中");
                     Thread.sleep(5000);
                 }
             }catch (Exception e){
