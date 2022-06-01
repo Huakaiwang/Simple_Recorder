@@ -173,6 +173,7 @@ public class RecorderService extends Service {
             closeNotification();
         }
     }
+    //设置音频录制相关的参数
     private void setRecorder() {
         //获取麦克风的声音
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);

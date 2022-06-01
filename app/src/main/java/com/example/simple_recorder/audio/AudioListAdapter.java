@@ -18,7 +18,7 @@ public class AudioListAdapter extends BaseAdapter {
 
     private Context context;
     private List<AudioBean> mDatas;
-    //
+    //拖动进度条会回调的接口
     public interface OnSeekBarChangeListener{
         void onChange(AudioListAdapter adapter,View convertView,SeekBar playView,int position);
     }
@@ -27,7 +27,6 @@ public class AudioListAdapter extends BaseAdapter {
     public void setOnSeekBarChangeListener(OnSeekBarChangeListener onSeekBarChangeListener) {
         this.onSeekBarChangeListener = onSeekBarChangeListener;
     }
-    //
     //点击每一个itemView当中的playIv都能够回调的接口
     public interface OnItemPlayClickListener {
         void onItemPlayClick(AudioListAdapter adapter, View convertView, View playView, int position);

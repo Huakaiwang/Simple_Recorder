@@ -48,7 +48,26 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
     private final String PRE_ACTION_CLOSE = "com.animee.close";
     private Notification notification;
 
+    public class AudioBinder extends Binder {
+        public AudioService getService() {
+            return AudioService.this;
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new AudioBinder();
+    }
+
     public AudioService() {
+    }
+    public interface OnPlayChangeListener {
+        public void playChange(int changePos);
+    }
+    private OnPlayChangeListener onPlayChangeListener;
+
+    public void setOnPlayChangeListener(OnPlayChangeListener onPlayChangeListener) {
+        this.onPlayChangeListener = onPlayChangeListener;
     }
 
     @Override
@@ -148,15 +167,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         manager.notify(NOTIFY_ID_MUSIC, notification);
     }
 
-    public interface OnPlayChangeListener {
-        public void playChange(int changePos);
-    }
 
-    private OnPlayChangeListener onPlayChangeListener;
-
-    public void setOnPlayChangeListener(OnPlayChangeListener onPlayChangeListener) {
-        this.onPlayChangeListener = onPlayChangeListener;
-    }
 
     //多媒体服务发生变化，提示Activiy刷新UI
     public void notifyActivityRefreshUI() {
@@ -172,16 +183,6 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         notifyActivityRefreshUI();
     }
 
-    public class AudioBinder extends Binder {
-        public AudioService getService() {
-            return AudioService.this;
-        }
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return new AudioBinder();
-    }
 
     /*
      * 播放按钮的两种可能性
@@ -330,7 +331,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
     private void setFlagControlThread(boolean flag) {
         this.flag = flag;
     }
-
+    //动态修改进度条进度
     public void updateProgress() {
         new Thread(new Runnable() {
             @Override

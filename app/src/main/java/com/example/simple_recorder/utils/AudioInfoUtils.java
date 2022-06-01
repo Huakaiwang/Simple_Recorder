@@ -21,6 +21,7 @@ public class AudioInfoUtils {
         }
         return utils;
     }
+    //获取media文件的时间长度
     public  long getAudioFileDuration(String filePath){
         long duration = 0;
         if (mediaMetadataRetriever == null) {
@@ -31,6 +32,7 @@ public class AudioInfoUtils {
         duration = Long.parseLong(s);
         return duration;
     }
+    //将durtion转换为自定的format格式
     public String getAudioFileFormatDuration(String format,long durlong){
         durlong -= 8*3600*1000;
         SimpleDateFormat sdf = new SimpleDateFormat(format);
@@ -49,6 +51,7 @@ public class AudioInfoUtils {
     String artist =  mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
     return artist;
     }
+    //释放retriever
     public void releseRetriever(){
         if (mediaMetadataRetriever!=null) {
             mediaMetadataRetriever.release();

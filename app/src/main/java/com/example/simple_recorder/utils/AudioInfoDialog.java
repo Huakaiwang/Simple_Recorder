@@ -51,6 +51,7 @@ public class AudioInfoDialog extends Dialog {
         //设置窗口参数
         window.setAttributes(wlp);
     }
+    //显示文件信息
     public void setFileInfo(AudioBean bean){
         binding.tvTime.setText(bean.getTime());
         binding.tvTitle.setText(bean.getTitle());
@@ -58,7 +59,7 @@ public class AudioInfoDialog extends Dialog {
         String size = calFileSize(bean.getFileLength());
         binding.tvSize.setText(size);
     }
-
+    //获得文件的大小
     private String calFileSize(long fileLength) {
         DecimalFormat format = new DecimalFormat("#.00");
         if (fileLength>=1024*1024) {

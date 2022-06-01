@@ -62,7 +62,15 @@ public class ExpandListActivity extends AppCompatActivity {
         setContentView(expandBinding.getRoot());
         setDarkStatusIcon(true);
         loadsDatas();
+        expandAllGroup();
         setEvent();
+    }
+    //展开所有Group列表
+    private void expandAllGroup() {
+        int groupCount = expandBinding.noteLv2.getCount();
+        for (int i=0; i<groupCount; i++) {
+            expandBinding.noteLv2.expandGroup(i);
+        }
     }
 
 

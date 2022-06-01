@@ -20,6 +20,7 @@ import com.example.simple_recorder.utils.StartSystemPageUtils;
 public class RecorderActivity extends AppCompatActivity {
     private ActivityRecorderBinding binding;
     private RecorderService recorderService;
+    //动态更新波纹和时间
     RecorderService.OnRefreshUIThreadListener refreshUIListener = new RecorderService.OnRefreshUIThreadListener() {
         @Override
         public void onRefresh(int db, String time) {
@@ -27,11 +28,13 @@ public class RecorderActivity extends AppCompatActivity {
             binding.tvDuration.setText(time);
         }
     };
+    //绑定服务
     ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             RecorderService.RecorderBinder binder = (RecorderService.RecorderBinder)service;
             recorderService = binder.getService();
+            //开始录音
             recorderService.startRecorder();
             recorderService.setOnRefreshUIThreadListener(refreshUIListener);
         }
@@ -86,9 +89,10 @@ public class RecorderActivity extends AppCompatActivity {
                 break;
         }
     }
-
+    //重写onKeyDown方法
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //按下返回键则跳转至手机主菜单界面
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             StartSystemPageUtils.goToHomePage(this);
             return true;

@@ -191,6 +191,10 @@ public class RecordActivity extends AppCompatActivity {
                                 }
                             }
                         },"取消",null);
+                    }else{
+                        Intent back = new Intent(RecordActivity.this,ExpandListActivity.class);
+                        startActivity(back);
+                        finish();
                     }
                 } else {//增加
                     if (content.length() > 0) {

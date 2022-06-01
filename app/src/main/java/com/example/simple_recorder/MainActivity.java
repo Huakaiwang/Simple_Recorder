@@ -24,36 +24,24 @@ import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private ActivityMainBinding binding;
+    private ActivityMainBinding binding;// 声明binding用于视图绑定功能
     private int time= 3;//倒计时时间
+    //动态申请的权限集合
     String[] permissions = {
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(@NonNull Message message) {
-            if (message.what == 1) {
-                time--;
-                if (time==0) {
-                    startActivity(new Intent(MainActivity.this, ExpandListActivity.class));
-                    finish();
-                }else {
-                    binding.mainTv.setText(time+"");
-                    handler.sendEmptyMessageDelayed(1,1000);
-                }
-            }
-            return false;
-        }
-    });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //初始化binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setDarkStatusIcon(true);
         binding.mainTv.setText(time+"");
+        //调用PermissionUtils工具类申请权限
         PermissionUtils.getInstance().onRequestPermission(this,permissions,listener);
     }
     /**
@@ -73,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
+    /**
+     * 重写回调接口的方法
+     */
     PermissionUtils.OnPermissionCallbackListener listener = new PermissionUtils.OnPermissionCallbackListener() {
         @Override
         public void onGranted() {
@@ -88,13 +78,38 @@ public class MainActivity extends AppCompatActivity {
             PermissionUtils.getInstance().showDialogTipUserGotoAppSetting(MainActivity.this);
         }
     };
+    /**
+     * 判断是否有
+     */
     private void createAppDir(){
         File recorderDir = SDCardUtils.getInstance().createAppFetchDir(IFileInter.FETCH_DIR_AUDIO);
         Contants.PATH_FETCH_DIR_RECORD = recorderDir.getAbsolutePath();
     }
+    /**
+     * 重写权限请求的结果处理
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionUtils.getInstance().onRequestPermissionResult(this,requestCode,permissions,grantResults);
     }
+    /**
+     * 控制应用导航界面倒计时
+     */
+    Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(@NonNull Message message) {
+            if (message.what == 1) {
+                time--;
+                if (time==0) {
+                    startActivity(new Intent(MainActivity.this, ExpandListActivity.class));
+                    finish();
+                }else {
+                    binding.mainTv.setText(time+"");
+                    handler.sendEmptyMessageDelayed(1,1000);
+                }
+            }
+            return false;
+        }
+    });
 }

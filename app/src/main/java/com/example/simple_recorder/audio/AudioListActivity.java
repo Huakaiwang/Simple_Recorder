@@ -57,14 +57,14 @@ public class AudioListActivity extends AppCompatActivity {
     private List<AudioBean> mDatas;
     private AudioListAdapter adapter;
     private AudioService audioService;
+    //绑定服务
     ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             AudioBinder audioBinder = (AudioBinder) service;
-            Log.d("audio", "onServiceConnected: "+audioBinder.getService());
+            Log.d("audio", "onServiceConnected: " + audioBinder.getService());
             audioService = audioBinder.getService();
             audioService.setOnPlayChangeListener(playChangeListener);
-
         }
 
         @Override
@@ -77,7 +77,7 @@ public class AudioListActivity extends AppCompatActivity {
     public boolean moveTaskToBack(boolean nonRoot) {
         return super.moveTaskToBack(true);
     }
-
+    //刷新页面
     AudioService.OnPlayChangeListener playChangeListener = new AudioService.OnPlayChangeListener() {
         @Override
         public void playChange(int changePos) {
@@ -98,8 +98,6 @@ public class AudioListActivity extends AppCompatActivity {
             //这是状态栏文字反色
             setDarkStatusIcon(true);
         }
-
-
         //绑定服务
         Intent intent = new Intent(this, AudioService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
@@ -116,6 +114,7 @@ public class AudioListActivity extends AppCompatActivity {
 
 
     }
+
     /**
      * 设置状态栏反色
      */
@@ -133,7 +132,8 @@ public class AudioListActivity extends AppCompatActivity {
             }
         }
     }
-//重写onKeyDown方法，使得点击返回键不退出app，而是跳转至桌面
+
+    //重写onKeyDown方法，使得点击返回键不退出app，而是跳转至桌面
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -146,20 +146,16 @@ public class AudioListActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d("AudioList", "onRestart: ");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d("AudioList", "onStop: ");
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("AudioList", "onDestroy: ");
         //解绑服务
         unbindService(connection);
     }
@@ -168,20 +164,21 @@ public class AudioListActivity extends AppCompatActivity {
      * 设置监听
      * */
     private void setEvents() {
-        adapter.setOnItemPlayClickListener(playClickListener);
-        binding.audioLv.setOnItemLongClickListener(longClickListener);
-        adapter.setOnSeekBarChangeListener(onSeekBarChangeListener);
-        binding.audioIb.setOnClickListener(onClickListener);
-        binding.rgTab.setOnCheckedChangeListener(changeListener);
+        adapter.setOnItemPlayClickListener(playClickListener);//播放按钮的点击事件
+        binding.audioLv.setOnItemLongClickListener(longClickListener);//ListView的长按事件
+        adapter.setOnSeekBarChangeListener(onSeekBarChangeListener);//拖动进度条的事件
+        binding.audioIb.setOnClickListener(onClickListener);//跳转录音界面
+        binding.rgTab.setOnCheckedChangeListener(changeListener);//跳转备忘录界面
     }
+
     //跳转记事本界面
     RadioGroup.OnCheckedChangeListener changeListener = new RadioGroup.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
-            if (checkedId==R.id.rb_noter) {
+            if (checkedId == R.id.rb_noter) {
                 Intent intent = new Intent(AudioListActivity.this, ExpandListActivity.class);
                 startActivity(intent);
-                AudioListActivity.this.overridePendingTransition(0,0);
+                AudioListActivity.this.overridePendingTransition(0, 0);
                 binding.rbNoter.setChecked(false);
             }
         }
@@ -203,7 +200,7 @@ public class AudioListActivity extends AppCompatActivity {
         @Override
         public void onChange(AudioListAdapter adapter, View convertView, SeekBar playView, int position) {
             int current = playView.getProgress();
-            audioService.changeAudioByCurrent(current,position);
+            audioService.changeAudioByCurrent(current, position);
         }
     };
     //点击每一个播放按钮都会回调的方法
