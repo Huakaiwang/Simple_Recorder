@@ -298,7 +298,7 @@ public class RecordActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         recordBinding.recordSpinner.setAdapter(adapter);
         Log.d("TAG", "initData: "+pos);
-        recordBinding.recordSpinner.setSelection(pos-1,true);
+        recordBinding.recordSpinner.setSelection(pos,true);
         if (intent != null) {
             id = intent.getStringExtra("id");
             if (id != null) {

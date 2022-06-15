@@ -51,7 +51,7 @@ public class ExpandListActivity extends AppCompatActivity {
     private SQLiteHelper helper;
     private List<NotepadBean> mList;
     private List<NotepadBean> searchList;
-    private List<List<NotepadBean>> checkList = new ArrayList<List<NotepadBean>>();
+    private List<List<NotepadBean>> checkList;
     private String targetid;
     private String content;
 
@@ -65,6 +65,15 @@ public class ExpandListActivity extends AppCompatActivity {
         expandAllGroup();
         setEvent();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("TAG", "onRestart: ");
+        loadsDatas();
+        expandeAdapter.notifyDataSetChanged();
+    }
+
     //展开所有Group列表
     private void expandAllGroup() {
         int groupCount = expandBinding.noteLv2.getCount();
@@ -78,6 +87,7 @@ public class ExpandListActivity extends AppCompatActivity {
      * 加载数据
      */
     private void loadsDatas() {
+        checkList = new ArrayList<List<NotepadBean>>();
         helper = new SQLiteHelper(this);
         gList = helper.queryGroup();
         for (int i = 0; i < gList.size(); i++) {
@@ -130,7 +140,7 @@ public class ExpandListActivity extends AppCompatActivity {
             startActivity(intent);
         }
     };
-    //推出搜索界面
+    //退出搜索界面
     View.OnClickListener backSearchListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -226,7 +236,7 @@ public class ExpandListActivity extends AppCompatActivity {
             intent.putExtra("gList",(Serializable) gList);
             intent.putExtra("group",checkList.get(groupPosition).get(childPosition).getGroup_id());
             Log.d("TAG", "onChildClick: "+gList.size());
-            intent.putExtra("pos",checkList.get(groupPosition).get(childPosition).getGroup_id());
+            intent.putExtra("pos",String.valueOf(groupPosition));
             startActivity(intent);
             return true;
         }

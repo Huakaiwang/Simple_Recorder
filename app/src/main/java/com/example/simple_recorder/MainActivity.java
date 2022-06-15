@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
     /**
-     * 判断是否有
+     * 创建文件夹
      */
     private void createAppDir(){
         File recorderDir = SDCardUtils.getInstance().createAppFetchDir(IFileInter.FETCH_DIR_AUDIO);
