@@ -219,7 +219,7 @@ public class ExpandListActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(ExpandListActivity.this,RecordActivity.class);
-            intent.putExtra("group","0");
+            intent.putExtra("group",gList.get(0).getGroupId());
             intent.putExtra("gList",(Serializable) gList);
             startActivity(intent);
         }

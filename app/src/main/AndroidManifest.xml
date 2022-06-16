@@ -17,6 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Simple_Recorder">
         <provider android:name=".provider.DictProvider"
+            android:enabled="true"
             android:exported="true"
             android:authorities="notepad.providers.dictprovider"
             />

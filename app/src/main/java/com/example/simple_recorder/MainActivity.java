@@ -19,6 +19,7 @@ import com.example.simple_recorder.utils.Contants;
 import com.example.simple_recorder.utils.IFileInter;
 import com.example.simple_recorder.utils.PermissionUtils;
 import com.example.simple_recorder.utils.SDCardUtils;
+import com.jaeger.library.StatusBarUtil;
 
 import java.io.File;
 import java.util.List;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         //初始化binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        StatusBarUtil.setColor(this, getResources().getColor(R.color.white),0);
         setDarkStatusIcon(true);
         binding.mainTv.setText(time+"");
         //调用PermissionUtils工具类申请权限

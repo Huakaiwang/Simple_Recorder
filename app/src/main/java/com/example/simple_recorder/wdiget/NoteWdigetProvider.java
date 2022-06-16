@@ -52,6 +52,11 @@ public class NoteWdigetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        ACTIOn_SERVICE.setPackage(context.getPackageName());
+        mcontext = context.getApplicationContext();
+        ACTIOn_SERVICE.setClass(context,WdigetService.class);
+        mcontext.bindService(ACTIOn_SERVICE,myconnection,context.BIND_AUTO_CREATE);
+        context.startService(ACTIOn_SERVICE);
         Log.d("TAG", "onReceive: 我被调用了222");
         super.onReceive(context, intent);
         mHelper = new SQLiteHelper(context);

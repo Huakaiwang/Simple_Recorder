@@ -69,6 +69,8 @@ public class DictProvider extends ContentProvider {
                 return "NOTES";
             case ITEMS:
                 return "ITEMS";
+            case NOTE:
+                return "NOTE";
             default:
                 throw new IllegalStateException("未知Uri"+uri);
         }
@@ -94,7 +96,6 @@ public class DictProvider extends ContentProvider {
                 value.put(DBUtils.NOTEPAD_CONTENT,contents);
                 value.put(DBUtils.NOTEPAD_TIME,time);
                 value.put(DBUtils.NOTEPAD_GROUP_ID,group);
-                String sqls = DBUtils.NOTEPAD_ID+"=?";
                 helper.getWritableDatabase().insert(DBUtils.DATABASE_TABLE,null,value);
                 break;
             default:
@@ -164,6 +165,7 @@ public class DictProvider extends ContentProvider {
                 String sqls = DBUtils.NOTEPAD_ID+"=?";
                 String[] stringss = new String[]{String.valueOf(id)};
                 helper.getWritableDatabase().update(DBUtils.DATABASE_TABLE,value,sqls,stringss);
+                break;
             default:
                 throw new IllegalStateException("未知Uri"+uri);
         }
